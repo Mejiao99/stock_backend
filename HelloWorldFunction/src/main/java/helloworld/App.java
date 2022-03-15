@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import com.amazonaws.services.lambda.runtime.Context;
@@ -22,27 +23,41 @@ public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatew
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
         headers.put("X-Custom-Header", "application/json");
+        headers.put("Access-Control-Allow-Headers", "application/json");
+        headers.put("Access-Control-Allow-Origin", "*");
+        headers.put("Access-Control-Allow-Methods", "OPTIONS,POST,GET");
+
 
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent()
                 .withHeaders(headers);
-        try {
-            final String pageContents = this.getPageContents("https://checkip.amazonaws.com");
-            String output = String.format("{ \"message\": \"hello world\", \"location\": \"%s\" }", pageContents);
+//        try {
+//            final String pageContents = this.getPageContents("https://checkip.amazonaws.com");
+//             output = String.format("{ \"message\": \"hello world\", \"location\": \"%s\" }", pageContents);
+            final String output = String.format("{\"accuracy\": %s}", getAccuracy());
 
             return response
                     .withStatusCode(200)
                     .withBody(output);
-        } catch (IOException e) {
-            return response
-                    .withBody("{}")
-                    .withStatusCode(500);
-        }
+//        } catch (IOException e) {
+//            return response
+//                    .withBody("{}")
+//                    .withStatusCode(500);
+//        }
     }
 
-    private String getPageContents(String address) throws IOException{
-        URL url = new URL(address);
-        try(BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()))) {
-            return br.lines().collect(Collectors.joining(System.lineSeparator()));
-        }
-    }
+//    private String getPageContents(String address) throws IOException{
+//        URL url = new URL(address);
+//        try(BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()))) {
+//            return br.lines().collect(Collectors.joining(System.lineSeparator()));
+//        }
+//    }
+
+public double getAccuracy() {
+    Random r = new Random();
+    double rangeMin = 0;
+    double rangeMax = 1;
+    double accuracy = rangeMin + (rangeMax - rangeMin) * r.nextDouble();
+    return accuracy;
+}
+
 }
