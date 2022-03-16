@@ -1,18 +1,15 @@
 package helloworld;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.stream.Collectors;
-
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Handler for requests to Lambda function.
@@ -27,37 +24,26 @@ public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatew
         headers.put("Access-Control-Allow-Origin", "*");
         headers.put("Access-Control-Allow-Methods", "OPTIONS,POST,GET");
 
-
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent()
                 .withHeaders(headers);
-//        try {
-//            final String pageContents = this.getPageContents("https://checkip.amazonaws.com");
-//             output = String.format("{ \"message\": \"hello world\", \"location\": \"%s\" }", pageContents);
-            final String output = String.format("{\"accuracy\": %s}", getAccuracy());
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Accuracy accuracy = Accuracy.builder()
+                    .accuracy(Math.random())
+                    .foo("hello world")
+                    .accounts(Arrays.asList("C1", "C2", "C3", "C4", "C5", "C6"))
+                    .build();
+            final String output = objectMapper.writeValueAsString(accuracy);
 
             return response
                     .withStatusCode(200)
                     .withBody(output);
-//        } catch (IOException e) {
-//            return response
-//                    .withBody("{}")
-//                    .withStatusCode(500);
-//        }
+        } catch (IOException e) {
+            return response
+                    .withBody("{}")
+                    .withStatusCode(500);
+        }
     }
-
-//    private String getPageContents(String address) throws IOException{
-//        URL url = new URL(address);
-//        try(BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()))) {
-//            return br.lines().collect(Collectors.joining(System.lineSeparator()));
-//        }
-//    }
-
-public double getAccuracy() {
-    Random r = new Random();
-    double rangeMin = 0;
-    double rangeMax = 1;
-    double accuracy = rangeMin + (rangeMax - rangeMin) * r.nextDouble();
-    return accuracy;
-}
 
 }

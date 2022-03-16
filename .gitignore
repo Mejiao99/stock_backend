@@ -133,5 +133,7 @@ events/*.json
 # Gradle
 .gradle
 
+build
+
 
 # End of https://www.gitignore.io/api/osx,node,linux,windows
