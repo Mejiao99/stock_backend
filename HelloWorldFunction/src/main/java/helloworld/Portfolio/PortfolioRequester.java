@@ -3,6 +3,7 @@ package helloworld.Portfolio;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 public class PortfolioRequester implements PortfoliosGenerator {
 
@@ -13,10 +14,11 @@ public class PortfolioRequester implements PortfoliosGenerator {
         if (request == OperationRequest.TEST) {
             Random rand = new Random();
             int quantity = rand.nextInt(10 - 1) + 1;
-            String random = String.valueOf(rand.nextInt(50 - 1 + 1) + 1);
+
             for (int i = 0; i < quantity; i++) {
+                String random = String.valueOf(rand.nextInt(50 - 1 + 1) + 1);
                 Portfolio portfolio = Portfolio.builder()
-                        .id(random)
+                        .id(UUID.randomUUID().toString())
                         .name("portName " + random)
                         .accuracy(Math.random())
                         .totalHoldings(
