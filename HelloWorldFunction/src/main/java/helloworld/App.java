@@ -5,11 +5,13 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import helloworld.Portfolio.OperationRequest;
+import helloworld.Portfolio.PortfolioRequester;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
 
 /**
  * Handler for requests to Lambda function.
@@ -26,16 +28,11 @@ public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatew
 
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent()
                 .withHeaders(headers);
+        PortfolioRequester generator = new PortfolioRequester();
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            Accuracy accuracy = Accuracy.builder()
-                    .accuracy(Math.random())
-                    .foo("hello world")
-                    .accounts(Arrays.asList("C1", "C2", "C3", "C4", "C5", "C6"))
-                    .build();
-            final String output = objectMapper.writeValueAsString(accuracy);
-
+            final String output = objectMapper.writeValueAsString(generator.getPortfolios(OperationRequest.TEST));
             return response
                     .withStatusCode(200)
                     .withBody(output);
