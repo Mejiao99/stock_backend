@@ -9,23 +9,37 @@ Description: >
 Globals:
   Function:
     Timeout: 20
+    Runtime: java11
+    Architectures:
+      - arm64
+    MemorySize: 512
 
 Resources:
   HelloWorldFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
       CodeUri: HelloWorldFunction
-      Handler: stock.backend.App::handleRequest
-      Runtime: java11
-      Architectures:
-        - arm64
-      MemorySize: 512
-      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+      Handler: helloworld.App::handleRequest
+      Environment:
         Variables:
           PARAM1: VALUE
       Events:
         HelloWorld:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Type: Api
+          Properties:
+            Path: /hello
+            Method: get
+  RandomPortfoliosProvider:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: HelloWorldFunction
+      Handler: stock.backend.App::handleRequest
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        HelloWorld:
+          Type: Api
           Properties:
             Path: /portfolios
             Method: get
