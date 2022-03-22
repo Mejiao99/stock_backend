@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import stock.backend.RandomPortfoliosProvider;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +32,12 @@ public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatew
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
+            Accuracy accuracy = Accuracy.builder()
+                    .accuracy(Math.random())
+                    .foo("hello world")
+                    .accounts(Arrays.asList("C1", "C2", "C3", "C4", "C5", "C6"))
+                    .build();
+
             final String output = objectMapper.writeValueAsString(portfolioProvider.getPortfolios());
             return response
                     .withStatusCode(200)
