@@ -1,4 +1,6 @@
-package helloworld.Portfolio;
+package stock_backend.Portfolio;
+
+import stock_backend.Api.OperationRequest;
 
 import java.util.ArrayList;
 import java.util.List;

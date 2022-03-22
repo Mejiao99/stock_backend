@@ -5,8 +5,8 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import helloworld.Portfolio.OperationRequest;
-import helloworld.Portfolio.PortfolioProvider;
+import stock_backend.Api.OperationRequest;
+import stock_backend.Portfolio.PortfolioProvider;
 
 import java.io.IOException;
 import java.util.HashMap;

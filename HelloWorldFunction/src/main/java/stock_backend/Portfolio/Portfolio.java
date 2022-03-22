@@ -1,4 +1,4 @@
-package helloworld.Portfolio;
+package stock_backend.Portfolio;
 
 import lombok.Builder;
 import lombok.Data;
