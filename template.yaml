@@ -29,7 +29,7 @@ Resources:
           Properties:
             Path: /hello
             Method: get
-  RandomPortfoliosProvider:
+  RandomPortfoliosProviderFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: HelloWorldFunction
@@ -38,7 +38,7 @@ Resources:
         Variables:
           PARAM1: VALUE
       Events:
-        HelloWorld:
+        GetPortfolios:
           Type: Api
           Properties:
             Path: /portfolios
