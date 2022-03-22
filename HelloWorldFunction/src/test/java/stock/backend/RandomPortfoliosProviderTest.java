@@ -7,10 +7,10 @@ import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class PortfolioProviderTest {
+public class RandomPortfoliosProviderTest {
 
     @Test
-    public void successfulResponse() {
+    public void successfulRandomPortfoliosProvider() {
         App app = new App();
         APIGatewayProxyResponseEvent result = app.handleRequest(null, null);
         String content = result.getBody();

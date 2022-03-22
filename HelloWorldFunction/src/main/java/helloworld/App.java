@@ -5,8 +5,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import stock.backend.OperationRequest;
-import stock.backend.PortfolioProvider;
+import stock.backend.RandomPortfoliosProvider;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -28,11 +27,11 @@ public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatew
 
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent()
                 .withHeaders(headers);
-        PortfolioProvider portfolioProvider = new PortfolioProvider();
+        RandomPortfoliosProvider portfolioProvider = new RandomPortfoliosProvider();
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            final String output = objectMapper.writeValueAsString(portfolioProvider.getPortfolios(OperationRequest.TEST));
+            final String output = objectMapper.writeValueAsString(portfolioProvider.getPortfolios());
             return response
                     .withStatusCode(200)
                     .withBody(output);
