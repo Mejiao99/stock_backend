@@ -15,7 +15,7 @@ Resources:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: HelloWorldFunction
-      Handler: helloworld.App::handleRequest
+      Handler: stock.backend.App::handleRequest
       Runtime: java11
       Architectures:
         - arm64
@@ -27,7 +27,7 @@ Resources:
         HelloWorld:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /hello
+            Path: /portfolios
             Method: get
 
 Outputs:
