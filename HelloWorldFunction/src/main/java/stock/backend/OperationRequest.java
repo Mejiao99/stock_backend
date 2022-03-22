@@ -1,4 +1,4 @@
-package stock_backend.Api;
+package stock.backend;
 
 public enum OperationRequest {
     TEST,

@@ -1,6 +1,4 @@
-package stock_backend.Portfolio;
-
-import stock_backend.Api.OperationRequest;
+package stock.backend;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package stock_backend.Portfolio;
+package stock.backend;
 
 import lombok.Builder;
 import lombok.Data;
