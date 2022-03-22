@@ -37,7 +37,7 @@ public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatew
                     .foo("hello world")
                     .accounts(Arrays.asList("C1", "C2", "C3", "C4", "C5", "C6"))
                     .build();
-
+//            final String output = objectMapper.writeValueAsString(accuracy);
             final String output = objectMapper.writeValueAsString(portfolioProvider.getPortfolios());
             return response
                     .withStatusCode(200)
