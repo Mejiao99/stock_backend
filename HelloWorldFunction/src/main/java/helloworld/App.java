@@ -6,7 +6,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import helloworld.Portfolio.OperationRequest;
-import helloworld.Portfolio.PortfolioRequester;
+import helloworld.Portfolio.PortfolioProvider;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -28,11 +28,11 @@ public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatew
 
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent()
                 .withHeaders(headers);
-        PortfolioRequester generator = new PortfolioRequester();
+        PortfolioProvider portfolioProvider = new PortfolioProvider();
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            final String output = objectMapper.writeValueAsString(generator.getPortfolios(OperationRequest.TEST));
+            final String output = objectMapper.writeValueAsString(portfolioProvider.getPortfolios(OperationRequest.TEST));
             return response
                     .withStatusCode(200)
                     .withBody(output);

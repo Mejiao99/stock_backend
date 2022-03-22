@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-public class PortfolioRequester implements PortfoliosGenerator {
+public class PortfolioProvider implements PortfoliosGenerator {
 
     @Override
     public List<Portfolio> getPortfolios(OperationRequest request) {
