@@ -1,4 +1,4 @@
-package helloworld;
+package stock_backend;
 
 import lombok.Builder;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package helloworld;
+package stock_backend;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import org.junit.Test;
