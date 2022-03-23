@@ -13,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 public class RandomPortfoliosProviderTest {
 
     @Test
-    public void successfulRandomPortfoliosProvider() {
+    public void successfulRandomPortfoliosProvide() {
         RandomPortfoliosProvider portfoliosProvider = new RandomPortfoliosProvider();
         List<Portfolio> portfolios = portfoliosProvider.getPortfolios();
         assertNotNull(portfolios);
