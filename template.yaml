@@ -61,7 +61,7 @@ Outputs:
 
   StockBackendApi:
     Description: "API Gateway endpoint URL for Prod stage for Stock Backend function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/backend/"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/stock/backend/portfolios/"
   StockBackendFunction:
     Description: "Stock Backend Lambda Function ARN"
     Value: !GetAtt StockBackend.Arn
