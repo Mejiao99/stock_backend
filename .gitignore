@@ -132,6 +132,10 @@ events/*.json
 
 # Gradle
 .gradle
+gradlew
+gradlew.bat
+gradle-wrapper.jar
+gradle-wrapper.properties
 
 build
 
