@@ -29,6 +29,7 @@ Resources:
           Properties:
             Path: /hello
             Method: get
+
   RandomPortfoliosProviderFunction:
     Type: AWS::Serverless::Function
     Properties:
