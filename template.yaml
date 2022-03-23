@@ -32,7 +32,7 @@ Resources:
   RandomPortfoliosProviderFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: HelloWorldFunction
+      CodeUri: StockBackend
       Handler: stock.backend.App::handleRequest
       Environment:
         Variables:
