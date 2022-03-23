@@ -30,16 +30,13 @@ Resources:
             Path: /hello
             Method: get
 
-  BackendFunction:
+  StockBackendFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: StockBackend
+      CodeUri: StockBackendFunction
       Handler: stock.backend.App::handleRequest
-      Environment:
-        Variables:
-          PARAM1: VALUE
       Events:
-        GetPortfolios:
+        StockBackend:
           Type: Api
           Properties:
             Path: /portfolios
@@ -61,10 +58,10 @@ Outputs:
 
   StockBackendApi:
     Description: "API Gateway endpoint URL for Prod stage for Stock Backend function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/stock/backend/portfolios/"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/"
   StockBackendFunction:
     Description: "Stock Backend Lambda Function ARN"
-    Value: !GetAtt StockBackend.Arn
+    Value: !GetAtt StockBackendFunction.Arn
   StockBackendIamRole:
     Description: "Implicit IAM Role created for Stock Backend function"
     Value: !GetAtt StockBackendFunctionRole.Arn
