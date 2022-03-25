@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * Handler for requests to Lambda function.
  */
-public abstract class  AbstractRequestHandler<T> implements com.amazonaws.services.lambda.runtime.RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public abstract class AbstractRequestHandler<T> implements com.amazonaws.services.lambda.runtime.RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     public APIGatewayProxyResponseEvent handleRequest(final APIGatewayProxyRequestEvent input, final Context context) {
         Map<String, String> headers = new HashMap<>();
@@ -25,10 +25,10 @@ public abstract class  AbstractRequestHandler<T> implements com.amazonaws.servic
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent()
                 .withHeaders(headers);
 
-
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-//            RandomPortfoliosProvider();
+
+//            T response = getResponse();
 
             final String output = objectMapper.writeValueAsString("{}");
 
@@ -41,6 +41,7 @@ public abstract class  AbstractRequestHandler<T> implements com.amazonaws.servic
                     .withStatusCode(500);
         }
     }
-    abstract protected AbstractRequestHandler<T> getResponse(final APIGatewayProxyRequestEvent input ,final Context context);
+
+    abstract protected AbstractRequestHandler<T> getResponse(final APIGatewayProxyRequestEvent input, final Context context);
 
 }
