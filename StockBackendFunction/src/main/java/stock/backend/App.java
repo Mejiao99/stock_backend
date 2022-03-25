@@ -48,14 +48,14 @@ public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatew
 
             List<PortfolioDefinition> portfolios = Collections.singletonList(portfolio);
 
-            Money money = Money.builder()
+            Money price = Money.builder()
                     .amount(50.0)
                     .currency("USD")
                     .build();
 
             List<StockPrice> stockPrices = Collections.singletonList(StockPrice.builder()
                     .ticket("ticketA")
-                    .money(money)
+                    .price(price)
                     .build());
 
             GetPortfolioResponse portfolioResponse = GetPortfolioResponse.builder()
