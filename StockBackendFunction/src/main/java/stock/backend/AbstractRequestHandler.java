@@ -40,5 +40,5 @@ public abstract class AbstractRequestHandler<T> implements RequestHandler<APIGat
         }
     }
 
-    abstract protected T getResponse(final APIGatewayProxyRequestEvent input, final Context context);
+     protected abstract T getResponse(final APIGatewayProxyRequestEvent input, final Context context);
 }
