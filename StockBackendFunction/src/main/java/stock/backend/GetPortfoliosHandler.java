@@ -15,7 +15,6 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
                 .ticket("ticketA")
                 .build());
 
-
         List<Account> accounts = Collections.singletonList(Account.builder()
                 .id("C1")
                 .holdings(holdings)
