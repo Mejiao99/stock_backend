@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * Handler for requests to Lambda function.
  */
-public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public abstract class AbstractRequestHandler<T> implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     public APIGatewayProxyResponseEvent handleRequest(final APIGatewayProxyRequestEvent input, final Context context) {
         Map<String, String> headers = new HashMap<>();
@@ -76,4 +76,8 @@ public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatew
         }
     }
 
+    public AbstractRequestHandler<T> getResponse(final APIGatewayProxyRequestEvent input, final Context context) {
+
+        return null;
+    }
 }
