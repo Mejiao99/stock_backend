@@ -39,5 +39,6 @@ public abstract class AbstractRequestHandler<T> implements RequestHandler<APIGat
                     .withStatusCode(500);
         }
     }
+
     abstract protected T getResponse(final APIGatewayProxyRequestEvent input, final Context context);
 }
