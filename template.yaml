@@ -19,7 +19,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: StockBackendFunction
-      Handler: stock.backend.App::handleRequest
+      Handler: stock.backend.GetPortfoliosHandler::handleRequest
       Events:
         StockBackend:
           Type: Api

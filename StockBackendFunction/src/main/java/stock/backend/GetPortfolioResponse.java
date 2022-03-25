@@ -1,7 +1,9 @@
 package stock.backend;
 
-import java.util.List;
+import lombok.Builder;
 
+import java.util.List;
+@Builder
 public class GetPortfolioResponse {
     List<PortfolioDefinition> portfolios;
     List <StockPrice> stockPrices;
