@@ -1,7 +1,6 @@
 package stock.backend;
 
 import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,7 +12,7 @@ import java.util.Map;
 /**
  * Handler for requests to Lambda function.
  */
-public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class AbstractRequestHandler<T> implements com.amazonaws.services.lambda.runtime.RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     public APIGatewayProxyResponseEvent handleRequest(final APIGatewayProxyRequestEvent input, final Context context) {
         Map<String, String> headers = new HashMap<>();
@@ -41,5 +40,7 @@ public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatew
                     .withStatusCode(500);
         }
     }
-
+    protected AbstractRequestHandler<T> getResponse(final APIGatewayProxyRequestEvent input ,final Context context){
+        return null;
+    }
 }
