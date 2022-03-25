@@ -7,5 +7,5 @@ import lombok.Data;
 @Builder
 public class StockPrice {
     String ticket;
-    Money money;
+    Money price;
 }
