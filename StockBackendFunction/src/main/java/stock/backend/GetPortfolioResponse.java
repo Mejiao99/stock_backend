@@ -5,9 +5,9 @@ import lombok.Data;
 
 import java.util.List;
 
-@Builder
 @Data
+@Builder
 public class GetPortfolioResponse {
-    private List<PortfolioDefinition> portfolios;
-    private List<StockPrice> stockPrices;
+    List<PortfolioDefinition> portfolios;
+    List<StockPrice> stockPrices;
 }
