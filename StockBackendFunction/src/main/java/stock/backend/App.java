@@ -7,7 +7,9 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,9 +30,41 @@ public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatew
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            RandomPortfoliosProvider provider = new RandomPortfoliosProvider();
+            List<Holding> holdings = Collections.singletonList(Holding.builder()
+                    .quantity(1)
+                    .ticket("ticketA")
+                    .build());
 
-            final String output = objectMapper.writeValueAsString(provider.getPortfolios());
+            List<Account> accounts = Collections.singletonList(Account.builder()
+                    .id("C1")
+                    .holdings(holdings)
+                    .build());
+
+            PortfolioDefinition portfolio = PortfolioDefinition.builder()
+                    .id("Xl1")
+                    .name("Port1")
+                    .accounts(accounts)
+                    .build();
+
+            List<PortfolioDefinition> portfolios = Collections.singletonList(portfolio);
+
+            Money money = Money.builder()
+                    .amount(50.0)
+                    .currency("USD")
+                    .build();
+
+            List<StockPrice> stockPrices = Collections.singletonList(StockPrice.builder()
+                    .ticket("ticketA")
+                    .money(money)
+                    .build());
+
+            GetPortfolioResponse portfolioResponse = GetPortfolioResponse.builder()
+                    .portfolios(portfolios)
+                    .stockPrices(stockPrices)
+                    .build();
+
+
+            final String output = objectMapper.writeValueAsString(portfolioResponse);
 
             return response
                     .withStatusCode(200)
