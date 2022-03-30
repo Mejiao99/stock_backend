@@ -29,11 +29,10 @@ Resources:
  ResponseTable:
     Type: AWS::Serverless::SimpleTable
     Properties:
-      PrimaryKey: PrimaryKeyObject
-      ProvisionedThroughput: ProvisionedThroughput
-      SSESpecification: SSESpecification
-      TableName: String
-      Tags: Map
+    TableName: String
+    PrimaryKey:
+      Name: userEmail
+      Type: String
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
