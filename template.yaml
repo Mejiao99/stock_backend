@@ -26,6 +26,14 @@ Resources:
           Properties:
             Path: /portfolios
             Method: get
+ ResponseTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey: PrimaryKeyObject
+      ProvisionedThroughput: ProvisionedThroughput
+      SSESpecification: SSESpecification
+      TableName: String
+      Tags: Map
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
