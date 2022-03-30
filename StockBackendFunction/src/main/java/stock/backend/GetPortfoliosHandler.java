@@ -34,8 +34,8 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
                 .amount(50.0)
                 .currency("USD")
                 .build();
-        Map<String,Money> stockPrices = new HashMap<>();
-        stockPrices.put("ticketA",price);
+        Map<String, Money> stockPrices = new HashMap<>();
+        stockPrices.put("ticketA", price);
 
         return GetPortfolioResponse.builder()
                 .portfolios(portfolios)
