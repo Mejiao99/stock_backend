@@ -55,6 +55,7 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
                 .build();
 
         List<PortfolioDefinition> portfolios = Arrays.asList(portfolio1, portfolio2);
+
         Money priceA = Money.builder()
                 .amount(5.0)
                 .currency("usd")
@@ -85,8 +86,8 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         Map<String, Double> conversionRates = new HashMap<>();
         conversionRates.put("usd", 1.3);
         conversionRates.put("cad", 1.0);
-        String targetCurrency = "cad";
 
+        String targetCurrency = "cad";
         return GetPortfolioResponse.builder()
                 .portfolios(portfolios)
                 .stockPrices(stockPrices)
