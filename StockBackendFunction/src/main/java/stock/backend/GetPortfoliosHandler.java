@@ -30,12 +30,12 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
 
         List<PortfolioDefinition> portfolios = Collections.singletonList(portfolio);
 
-        Money priceA = Money.builder()
+        Money price = Money.builder()
                 .amount(50.0)
                 .currency("USD")
                 .build();
         Map<String,Money> stockPrices = new HashMap<>();
-        stockPrices.put("ticketA",priceA);
+        stockPrices.put("ticketA",price);
 
         return GetPortfolioResponse.builder()
                 .portfolios(portfolios)
