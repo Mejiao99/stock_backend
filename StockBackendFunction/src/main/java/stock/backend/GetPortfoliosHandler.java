@@ -4,7 +4,9 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioResponse> {
 
@@ -28,15 +30,12 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
 
         List<PortfolioDefinition> portfolios = Collections.singletonList(portfolio);
 
-        Money price = Money.builder()
-                .amount(50.0)
+        Money priceA = Money.builder()
+                .amount(5)
                 .currency("USD")
                 .build();
-
-        List<StockPrice> stockPrices = Collections.singletonList(StockPrice.builder()
-                .ticket("ticketA")
-                .price(price)
-                .build());
+        Map<String,Money> stockPrices = new HashMap<>();
+        stockPrices.put("ticketA",priceA);
 
         return GetPortfolioResponse.builder()
                 .portfolios(portfolios)
