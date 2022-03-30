@@ -13,10 +13,10 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
 
     @Override
     protected GetPortfolioResponse getResponse(APIGatewayProxyRequestEvent input, Context context) {
-        Map<String,Double> holdingsC11 = new HashMap<>();
-        holdingsC11.put("ticketA",8.0);
-        holdingsC11.put("ticketB",5.0);
-        holdingsC11.put("ticketC",3.0);
+        Map<String, Double> holdingsC11 = new HashMap<>();
+        holdingsC11.put("ticketA", 8.0);
+        holdingsC11.put("ticketB", 5.0);
+        holdingsC11.put("ticketC", 3.0);
         List<Account> accountsD1 = Collections.singletonList(Account.builder()
                 .id("C1")
                 .holdings(holdingsC11)
@@ -28,12 +28,12 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
                 .accounts(accountsD1)
                 .build();
 
-        Map<String,Double> holdingsC22 = new HashMap<>();
-        holdingsC22.put("ticketD",7.0);
-        holdingsC22.put("ticketE",2.0);
-        Map<String,Double> holdingsC23 = new HashMap<>();
-        holdingsC23.put("ticketA",4.0);
-        holdingsC23.put("ticketD",1.0);
+        Map<String, Double> holdingsC22 = new HashMap<>();
+        holdingsC22.put("ticketD", 7.0);
+        holdingsC22.put("ticketE", 2.0);
+        Map<String, Double> holdingsC23 = new HashMap<>();
+        holdingsC23.put("ticketA", 4.0);
+        holdingsC23.put("ticketD", 1.0);
         List<Account> accountsD2 = Arrays.asList(
                 Account.builder()
                         .id("C1")
