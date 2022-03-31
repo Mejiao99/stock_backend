@@ -102,7 +102,6 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-
         return GetPortfolioResponse.builder().build();
     }
 
