@@ -10,6 +10,11 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
 
     @Override
     protected GetPortfolioResponse getResponse(APIGatewayProxyRequestEvent input, Context context) {
+        final String contents = readContents();
+        return convertFromJson(contents);
+    }
+
+    private String readContents() {
         final String contents = "{\n" +
                 "  \"portfolios\": [\n" +
                 "    {\n" +
@@ -83,7 +88,7 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
                 "  },\n" +
                 "  \"targetCurrency\": \"cad\"\n" +
                 "}";
-        return convertFromJson(contents);
+        return contents;
     }
 
     private GetPortfolioResponse convertFromJson(String json) {
