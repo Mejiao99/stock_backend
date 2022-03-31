@@ -3,6 +3,7 @@ package stock.backend;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Arrays;
@@ -58,7 +59,6 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
                 .build();
 
         List<PortfolioDefinition> portfolios = Arrays.asList(portfolio1, portfolio2);
-
         Money priceA = Money.builder()
                 .amount(5.0)
                 .currency("usd")
@@ -91,15 +91,23 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         conversionRates.put("cad", 1.0);
 
         String targetCurrency = "cad";
-        return GetPortfolioResponse.builder()
-                .portfolios(portfolios)
-                .stockPrices(stockPrices)
-                .conversionRates(conversionRates)
-                .targetCurrency(targetCurrency)
-                .build();
+
+        try {
+            return GetPortfolioResponse.builder()
+                    .portfolios(convertFromJson(objectMapper.writeValueAsString(portfolios)))
+                    .stockPrices(stockPrices)
+                    .conversionRates(conversionRates)
+                    .targetCurrency(targetCurrency)
+                    .build();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return GetPortfolioResponse.builder().build();
     }
 
-    private GetPortfolioResponse convertFromJson(String json) throws JsonProcessingException {
-        return objectMapper.readValue(json, GetPortfolioResponse.class);
+    private List<PortfolioDefinition> convertFromJson(String json) throws JsonProcessingException {
+        return objectMapper.readValue(json, new TypeReference<>() {
+        });
     }
 }
