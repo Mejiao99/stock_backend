@@ -1,16 +1,20 @@
 package stock.backend;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Map;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class GetPortfolioResponse {
-    List<PortfolioDefinition> portfolios;
-    Map<String, Money> stockPrices;
-    Map<String, Double> conversionRates;
-    String targetCurrency;
+    private List<PortfolioDefinition> portfolios;
+    private Map<String, Money> stockPrices;
+    private Map<String, Double> conversionRates;
+    private String targetCurrency;
 }
