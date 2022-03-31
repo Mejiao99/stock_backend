@@ -2,6 +2,8 @@ package stock.backend;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioResponse> {
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     protected GetPortfolioResponse getResponse(APIGatewayProxyRequestEvent input, Context context) {
@@ -94,5 +97,9 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
                 .conversionRates(conversionRates)
                 .targetCurrency(targetCurrency)
                 .build();
+    }
+
+    private GetPortfolioResponse convertFromJson(String json) throws JsonProcessingException {
+        return objectMapper.readValue(json, GetPortfolioResponse.class);
     }
 }
