@@ -23,7 +23,6 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
 
     private String readContents() {
         AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
-//                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:8000", "us-west-2"))
                 .build();
         DynamoDB dynamoDB = new DynamoDB(client);
         Table table = dynamoDB.getTable("PortfolioDefinitions");
