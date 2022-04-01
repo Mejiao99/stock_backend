@@ -26,6 +26,13 @@ Resources:
           Properties:
             Path: /portfolios
             Method: get
+  PortfolioDefinitionsTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      TableName: PortfolioDefinitions
+      PrimaryKey:
+        Name: userId
+        Type: String
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
