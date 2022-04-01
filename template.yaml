@@ -21,8 +21,8 @@ Resources:
       CodeUri: StockBackendFunction
       Handler: stock.backend.GetPortfoliosHandler::handleRequest
       Policies:
-          DynamoDBCrudPolicy:
-          TableName: !Ref PortfolioDefinitions
+        - DynamoDBCrudPolicy:
+            TableName: !Ref PortfolioDefinitions
       Events:
         StockBackend:
           Type: Api
