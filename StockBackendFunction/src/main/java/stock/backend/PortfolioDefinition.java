@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Builder
@@ -15,4 +16,5 @@ public class PortfolioDefinition {
     private String id;
     private String name;
     private List<Account> accounts;
+    private Map<String, Double> targetHoldings;
 }
