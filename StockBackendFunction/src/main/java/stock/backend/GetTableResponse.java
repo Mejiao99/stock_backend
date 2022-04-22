@@ -1,8 +1,10 @@
 package stock.backend;
 
+import java.util.List;
+
 public class GetTableResponse {
-    private String[] accounts;
-    private String[] tickets;
-    private Money[][] data;
+    private List<String> accounts;
+    private List<String> tickets;
+    private List<List<Money>> data;
     private Totals totals;
 }
