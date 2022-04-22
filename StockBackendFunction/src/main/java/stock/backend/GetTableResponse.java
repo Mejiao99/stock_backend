@@ -1,6 +1,6 @@
 package stock.backend;
 
-public class TableResponse {
+public class GetTableResponse {
     private String[] accounts;
     private String[] tickets;
     private Money[][] data;

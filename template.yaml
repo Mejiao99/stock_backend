@@ -29,6 +29,17 @@ Resources:
           Properties:
             Path: /portfolios
             Method: get
+  TableBackendFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: StockBackendFunction
+      Handler: stock.backend.GetTableHandler::handleRequest
+      Events:
+        StockBackend:
+          Type: Api
+          Properties:
+            Path: /table
+            Method: get
   PortfolioDefinitionsTable:
     Type: AWS::Serverless::SimpleTable
     Properties:
