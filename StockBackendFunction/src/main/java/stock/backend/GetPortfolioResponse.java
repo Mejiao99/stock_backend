@@ -17,4 +17,5 @@ public class GetPortfolioResponse {
     private Map<String, Money> stockPrices;
     private Map<String, Double> conversionRates;
     private String targetCurrency;
+    private Map<String,GetTableResponse> tablePerPortfolioDefinitions;
 }

@@ -11,6 +11,10 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioResponse> {
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -18,7 +22,39 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
     @Override
     protected GetPortfolioResponse getResponse(APIGatewayProxyRequestEvent input, Context context) {
         final String contents = readContents();
-        return convertFromJson(contents);
+        GetPortfolioResponse response = convertFromJson(contents);
+        Map<String,GetTableResponse> tablePerPortfolioDefinitions = GenerateTablePerPortfolioDefinitions();
+        response.setTablePerPortfolioDefinitions(tablePerPortfolioDefinitions);
+        return response;
+    }
+
+    private Map<String, GetTableResponse> GenerateTablePerPortfolioDefinitions() {
+        Map<String,GetTableResponse> response = new HashMap<>();
+        response.put("port-1",GetTableResponse.builder()
+                .accounts(List.of())
+                .tickets(List.of())
+                .data(List.of(Collections.emptyList()))
+                .totals(Totals.builder()
+                        .accounts(Collections.emptyList())
+                        .tickets(Collections.emptyList())
+                        .total(Money.builder()
+                                .amount(0)
+                                .currency("")
+                                .build())
+                        .build()).build());
+        response.put("port-2",GetTableResponse.builder()
+                .accounts(List.of())
+                .tickets(List.of())
+                .data(List.of(Collections.emptyList()))
+                .totals(Totals.builder()
+                        .accounts(Collections.emptyList())
+                        .tickets(Collections.emptyList())
+                        .total(Money.builder()
+                                .amount(0)
+                                .currency("")
+                                .build())
+                        .build()).build());
+        return response;
     }
 
     private String readContents() {
