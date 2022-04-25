@@ -37,7 +37,7 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
             response.put(portfolioDefinition.getId(), GetTableResponse.builder()
                     .accounts(getAccounts(portfolioDefinition))
                     .tickets(getTickets(portfolioDefinition))
-                    .data(List.of(Collections.emptyList()))
+                    .data(generatePortfolioData(portfolioDefinition,getPortfolioResponse.getStockPrices()))
                     .totals(Totals.builder()
                             .accounts(Collections.emptyList())
                             .tickets(Collections.emptyList())
@@ -48,6 +48,23 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
                             .build()).build());
         }
         return response;
+    }
+
+    private List<List<Money>> generatePortfolioData(PortfolioDefinition portfolioDefinition, Map<String, Money> stockPrices) {
+        List<List<Money>> portfolioData = new ArrayList<>();
+        for (Account account:portfolioDefinition.getAccounts()){
+            portfolioData.add(calculateAccountHoldings(account.getHoldings(),stockPrices));
+        }
+        return portfolioData;
+    }
+
+    private List<Money> calculateAccountHoldings(Map<String, Double> holdings, Map<String, Money> stockPrices) {
+        List<Money> accountMoney = new ArrayList<>();
+        for (Map.Entry<String,Double> entry : holdings.entrySet()) {
+            Money stockMoney = stockPrices.get(entry.getKey());
+            accountMoney.add(Money.builder().currency(stockMoney.getCurrency()).amount(entry.getValue()*stockMoney.getAmount()).build());
+        }
+        return accountMoney;
     }
 
     private List<String> getTickets(PortfolioDefinition portfolioDefinition) {
