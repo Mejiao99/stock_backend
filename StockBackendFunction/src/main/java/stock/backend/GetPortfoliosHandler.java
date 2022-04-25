@@ -14,8 +14,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioResponse> {
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -34,7 +36,7 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         for (PortfolioDefinition portfolioDefinition : getPortfolioResponse.getPortfolios()) {
             response.put(portfolioDefinition.getId(), GetTableResponse.builder()
                     .accounts(getAccounts(portfolioDefinition))
-                    .tickets(List.of())
+                    .tickets(getTickets(portfolioDefinition))
                     .data(List.of(Collections.emptyList()))
                     .totals(Totals.builder()
                             .accounts(Collections.emptyList())
@@ -46,6 +48,14 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
                             .build()).build());
         }
         return response;
+    }
+
+    private List<String> getTickets(PortfolioDefinition portfolioDefinition) {
+        Set<String> ticketSet = new HashSet<>();
+        for (Account account : portfolioDefinition.getAccounts()) {
+            ticketSet.addAll(account.getHoldings().keySet());
+        }
+        return new ArrayList<>(ticketSet);
     }
 
     private List<String> getAccounts(PortfolioDefinition portfolioDefinition) {
