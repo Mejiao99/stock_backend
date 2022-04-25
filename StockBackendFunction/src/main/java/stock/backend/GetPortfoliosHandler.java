@@ -55,7 +55,10 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         for (Account account : portfolioDefinition.getAccounts()) {
             ticketSet.addAll(account.getHoldings().keySet());
         }
-        return new ArrayList<>(ticketSet);
+        List<String> ticketList = new ArrayList<>(ticketSet);
+        ticketList.add("Currency:CAD");
+        ticketList.add("Currency:USD");
+        return ticketList;
     }
 
     private List<String> getAccounts(PortfolioDefinition portfolioDefinition) {
