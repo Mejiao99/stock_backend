@@ -62,16 +62,19 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
     private List<Money> calculateAccountHoldings(Map<String, Double> holdings, Map<String, Money> stockPrices, List<String> accountTickets) {
         List<Money> accountMoney = new ArrayList<>();
         for (String ticket : accountTickets) {
-            if (holdings.get(ticket) == null) {
-                accountMoney.add(buildMoney(0.0, stockPrices.get(ticket).getCurrency()));
-            } else {
-                Double accountHoldingAmount = holdings.get(ticket);
-                Money stockMoney = stockPrices.get(ticket);
-                Money stockValue = buildMoney(accountHoldingAmount*stockMoney.getAmount(),stockMoney.getCurrency());
-                accountMoney.add(stockValue);
-            }
+            accountMoney.add(calculateTotalAmountTicket(ticket, stockPrices, holdings));
         }
         return accountMoney;
+    }
+
+    private Money calculateTotalAmountTicket(String ticket, Map<String, Money> stockPrices, Map<String, Double> holdings) {
+        if (holdings.get(ticket) == null) {
+            return buildMoney(0.0, stockPrices.get(ticket).getCurrency());
+        } else {
+            Double accountHoldingAmount = holdings.get(ticket);
+            Money stockMoney = stockPrices.get(ticket);
+            return buildMoney(accountHoldingAmount * stockMoney.getAmount(), stockMoney.getCurrency());
+        }
     }
 
     private Money buildMoney(Double amount, String currency) {
