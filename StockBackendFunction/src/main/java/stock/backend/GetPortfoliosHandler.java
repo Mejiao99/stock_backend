@@ -39,16 +39,45 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
                     .accounts(getAccounts(portfolioDefinition))
                     .tickets(accountTickets)
                     .data(generatePortfolioData(portfolioDefinition, getPortfolioResponse.getStockPrices(), accountTickets))
-                    .totals(Totals.builder()
-                            .accounts(Collections.emptyList())
-                            .tickets(Collections.emptyList())
-                            .total(Money.builder()
-                                    .amount(0)
-                                    .currency("")
-                                    .build())
-                            .build()).build());
+                    .totals(calculateTotals(portfolioDefinition,getPortfolioResponse,accountTickets)).build());
         }
         return response;
+    }
+    private Totals calculateTotals(PortfolioDefinition portfolioDefinition, GetPortfolioResponse getPortfolioResponse, List<String> accountTickets) {
+        return Totals.builder()
+                .accounts(accountTotals(
+                        portfolioDefinition,
+                        getPortfolioResponse.getStockPrices(),
+                        getPortfolioResponse.getConversionRates(),
+                        getPortfolioResponse.getTargetCurrency(),
+                        accountTickets))
+                .tickets(Collections.emptyList())
+                .total(Money.builder()
+                        .amount(0)
+                        .currency("")
+                        .build())
+                .build();
+    }
+
+    private List<Money> accountTotals(PortfolioDefinition portfolioDefinition, Map<String, Money> stockPrices, Map<String, Double> conversionRates, String targetCurrency, List<String> tickets) {
+        List<Money> accountTotals = new ArrayList<>();
+        for (Account account : portfolioDefinition.getAccounts()) {
+            List<Money> accountHoldings = calculateAccountHoldings(account.getHoldings(), stockPrices, tickets);
+            accountTotals.add(calculateAccountTotal(accountHoldings, conversionRates, targetCurrency));
+        }
+        return accountTotals;
+    }
+
+    private Money calculateAccountTotal(List<Money> accountHoldings, Map<String, Double> conversionRates, String currencyTarget) {
+        double total = 0.0;
+        for (Money money : accountHoldings) {
+            if (money.getCurrency().equals(currencyTarget)) {
+                total = total + money.getAmount();
+            } else {
+                total = total + money.getAmount() * conversionRates.get(money.getCurrency());
+            }
+        }
+        return buildMoney(total, currencyTarget);
     }
 
     private List<List<Money>> generatePortfolioData(PortfolioDefinition portfolioDefinition, Map<String, Money> stockPrices, List<String> accountTickets) {
