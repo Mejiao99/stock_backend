@@ -63,15 +63,19 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         List<Money> accountMoney = new ArrayList<>();
         for (String ticket : accountTickets) {
             if (holdings.get(ticket) == null) {
-                accountMoney.add(Money.builder().amount(0).currency(stockPrices.get(ticket).getCurrency()).build());
+                accountMoney.add(buildMoney(0.0, stockPrices.get(ticket).getCurrency()));
             } else {
                 Double accountHoldingAmount = holdings.get(ticket);
                 Money stockMoney = stockPrices.get(ticket);
-                Money stockValue = Money.builder().currency(stockMoney.getCurrency()).amount(accountHoldingAmount * stockMoney.getAmount()).build();
+                Money stockValue = buildMoney(accountHoldingAmount*stockMoney.getAmount(),stockMoney.getCurrency());
                 accountMoney.add(stockValue);
             }
         }
         return accountMoney;
+    }
+
+    private Money buildMoney(Double amount, String currency) {
+        return Money.builder().amount(amount).currency(currency).build();
     }
 
     private List<String> getTickets(PortfolioDefinition portfolioDefinition) {
