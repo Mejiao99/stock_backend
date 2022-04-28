@@ -14,7 +14,7 @@ public class Money {
     private String currency;
 
     private Money multiply(final double factor) {
-        return Money.builder().amount(this.amount * factor).currency(this.currency).build();
+        return Money.builder().amount(amount * factor).currency(currency).build();
     }
 
 }
