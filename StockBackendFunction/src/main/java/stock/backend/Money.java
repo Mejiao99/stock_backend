@@ -13,17 +13,8 @@ public class Money {
     private double amount;
     private String currency;
 
-    private double multiplyDoubles(double x, double y) {
-        return x * y;
+    private Money moneyMultiply(final Money money, final double y) {
+        return Money.builder().amount(money.amount * y).currency(money.getCurrency()).build();
     }
-
-    private double convertAmount(double amount, double conversionRatio) {
-        return multiplyDoubles(amount, conversionRatio);
-    }
-
-    private double sumDoubles(double x, double y) {
-        return x + y;
-    }
-
 
 }
