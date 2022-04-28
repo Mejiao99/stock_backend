@@ -17,4 +17,8 @@ public class Money {
         return Money.builder().amount(amount * factor).currency(currency).build();
     }
 
+    private Money convertCurrencyToTargetCurrency(final double conversionRate, final String targetCurrency){
+        return Money.builder().amount(amount * conversionRate).currency(targetCurrency).build();
+    }
+
 }
