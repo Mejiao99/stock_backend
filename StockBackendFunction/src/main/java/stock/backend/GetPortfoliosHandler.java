@@ -58,10 +58,10 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
                         getPortfolioResponse.getTargetCurrency(),
                         accountTickets
                 ))
-                .total(Money.builder()
-                        .amount(0)
-                        .currency("")
-                        .build())
+                .total(calculatePortfolioTotal(
+                        getPortfolioStocks(portfolioDefinition,getPortfolioResponse.getStockPrices(),accountTickets),
+                        getPortfolioResponse.getConversionRates(),
+                        getPortfolioResponse.getTargetCurrency()))
                 .build();
     }
 
@@ -78,6 +78,28 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
             accountTotals.add(calculateAccountTotal(accountHoldings, conversionRates, targetCurrency));
         }
         return accountTotals;
+    }
+
+    private Map<String, Money> getPortfolioStocks(PortfolioDefinition portfolioDefinition, Map<String, Money> stockPrices, List<String> accountTickets) {
+        Map<String, Money> accountMoney = new HashMap<>();
+        for (Account account : portfolioDefinition.getAccounts()) {
+            for (String ticket : accountTickets) {
+                accountMoney.put(ticket, (calculateTotalAmountTicket(ticket, stockPrices, account.getHoldings())));
+            }
+        }
+        return accountMoney;
+    }
+
+    private Money calculatePortfolioTotal(Map<String, Money> accountMoney, Map<String, Double> conversionRates, String targetCurrency) {
+        double total = 0;
+        for (Map.Entry<String, Money> money : accountMoney.entrySet()) {
+            final Money actualMoney = money.getValue();
+            if (!actualMoney.getCurrency().equals(targetCurrency)) {
+                total = total + (actualMoney.getAmount() * conversionRates.get(actualMoney.getCurrency()));
+            }
+            total = total + actualMoney.getAmount();
+        }
+        return Money.builder().amount(total).currency(targetCurrency).build();
     }
 
     private Money calculateAccountTotal(List<Money> accountHoldings, Map<String, Double> conversionRates, String currencyTarget) {
