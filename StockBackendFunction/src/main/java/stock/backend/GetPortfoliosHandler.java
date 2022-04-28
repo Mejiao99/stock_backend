@@ -12,7 +12,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -39,10 +38,11 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
                     .accounts(getAccounts(portfolioDefinition))
                     .tickets(accountTickets)
                     .data(generatePortfolioData(portfolioDefinition, getPortfolioResponse.getStockPrices(), accountTickets))
-                    .totals(calculateTotals(portfolioDefinition,getPortfolioResponse,accountTickets)).build());
+                    .totals(calculateTotals(portfolioDefinition, getPortfolioResponse, accountTickets)).build());
         }
         return response;
     }
+
     private Totals calculateTotals(PortfolioDefinition portfolioDefinition, GetPortfolioResponse getPortfolioResponse, List<String> accountTickets) {
         return Totals.builder()
                 .accounts(accountTotals(
@@ -51,12 +51,24 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
                         getPortfolioResponse.getConversionRates(),
                         getPortfolioResponse.getTargetCurrency(),
                         accountTickets))
-                .tickets(Collections.emptyList())
+                .tickets(ticketsTotals(
+                        portfolioDefinition,
+                        getPortfolioResponse.getStockPrices(),
+                        getPortfolioResponse.getConversionRates(),
+                        getPortfolioResponse.getTargetCurrency(),
+                        accountTickets
+                ))
                 .total(Money.builder()
                         .amount(0)
                         .currency("")
                         .build())
                 .build();
+    }
+
+    private List<Money> ticketsTotals(PortfolioDefinition portfolioDefinition, Map<String, Money> stockPrices, Map<String, Double> conversionRates, String targetCurrency, List<String> tickets) {
+        List<Money> ticketsTotals = new ArrayList<>();
+
+        return ticketsTotals;
     }
 
     private List<Money> accountTotals(PortfolioDefinition portfolioDefinition, Map<String, Money> stockPrices, Map<String, Double> conversionRates, String targetCurrency, List<String> tickets) {
@@ -77,7 +89,7 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
                 total = total + money.getAmount() * conversionRates.get(money.getCurrency());
             }
         }
-        return buildMoney(total, currencyTarget);
+        return Money.builder().amount(total).currency(currencyTarget).build();
     }
 
     private List<List<Money>> generatePortfolioData(PortfolioDefinition portfolioDefinition, Map<String, Money> stockPrices, List<String> accountTickets) {
@@ -100,14 +112,9 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         Double accountHoldingAmount = holdings.get(ticket);
         Money stockMoney = stockPrices.get(ticket);
         if (accountHoldingAmount == null) {
-            return buildMoney(0.0, stockMoney.getCurrency());
+            return Money.builder().amount(0.0).currency(stockMoney.getCurrency()).build();
         }
-        return buildMoney(accountHoldingAmount * stockMoney.getAmount(), stockMoney.getCurrency());
-    }
-
-
-    private Money buildMoney(Double amount, String currency) {
-        return Money.builder().amount(amount).currency(currency).build();
+        return Money.builder().amount(accountHoldingAmount * stockMoney.getAmount()).currency(stockMoney.getCurrency()).build();
     }
 
     private List<String> getTickets(PortfolioDefinition portfolioDefinition) {
