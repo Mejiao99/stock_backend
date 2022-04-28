@@ -65,6 +65,33 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
                 .build();
     }
 
+    private Map<String, Money> totalPerCurrency(Map<String, Money> portfolioStocks, List<String> currencyList) {
+        Map<String, Money> totalPerCurrency = new HashMap<>();
+        for (String currency : currencyList) {
+            totalPerCurrency.put(currency, sumListMoney(stockPerCurrencyList(portfolioStocks, currency), currency));
+        }
+        return totalPerCurrency;
+    }
+
+
+    private Money sumListMoney(List<Money> monies, String currency) {
+        double total = 0.0;
+        for (Money money : monies) {
+            total = total + money.getAmount();
+        }
+        return Money.builder().amount(total).currency(currency).build();
+    }
+
+    private List<Money> stockPerCurrencyList(Map<String, Money> portfolioStocks, String currency) {
+        List<Money> result = new ArrayList<>();
+        for (Map.Entry<String, Money> currentMoney : portfolioStocks.entrySet()) {
+            if (currentMoney.getValue().getCurrency().equals(currency)) {
+                result.add(currentMoney.getValue());
+            }
+        }
+        return result;
+    }
+
     private List<Money> ticketsTotals(PortfolioDefinition portfolioDefinition, Map<String, Money> stockPrices, Map<String, Double> conversionRates, String targetCurrency, List<String> tickets) {
         List<Money> ticketsTotals = new ArrayList<>();
 
