@@ -26,6 +26,8 @@ public class Money {
         if (moneyCurrency.equals(currency)) {
             return Money.builder().amount(amount + money.amount).currency(moneyCurrency).build();
         }
-        return money;
+        throw new RuntimeException();
     }
+
 }
+
