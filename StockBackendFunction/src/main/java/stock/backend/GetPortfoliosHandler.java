@@ -36,9 +36,10 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
             List<String> currencyList = new ArrayList<>();
             currencyList.add("cad");
             currencyList.add("usd");
-
-            totalPerCurrency(portfolioStocks,currencyList);
             List<String> accountTickets = getTickets(portfolioDefinition);
+            Map<String, Money> portfolioStocks = getPortfolioStocks(portfolioDefinition, getPortfolioResponse.getStockPrices(), accountTickets);
+            System.err.println(portfolioStocks);
+            System.err.println(totalPerCurrency(portfolioStocks, currencyList));
             response.put(portfolioDefinition.getId(), GetTableResponse.builder()
                     .accounts(getAccounts(portfolioDefinition))
                     .tickets(accountTickets)
@@ -68,6 +69,16 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
                         .currency("")
                         .build())
                 .build();
+    }
+
+    private Map<String, Money> getPortfolioStocks(PortfolioDefinition portfolioDefinition, Map<String, Money> stockPrices, List<String> accountTickets) {
+        Map<String, Money> accountMoney = new HashMap<>();
+        for (Account account : portfolioDefinition.getAccounts()) {
+            for (String ticket : accountTickets) {
+                accountMoney.put(ticket, (calculateTotalAmountTicket(ticket, stockPrices, account.getHoldings())));
+            }
+        }
+        return accountMoney;
     }
 
     private Map<String, Money> totalPerCurrency(Map<String, Money> portfolioStocks, List<String> currencyList) {
