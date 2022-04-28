@@ -27,7 +27,6 @@ public class Money {
             throw new RuntimeException();
         }
         return Money.builder().amount(amount + other.amount).currency(moneyCurrency).build();
-
     }
 
 }
