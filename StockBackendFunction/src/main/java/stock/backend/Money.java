@@ -17,11 +17,11 @@ public class Money {
         return Money.builder().amount(amount * factor).currency(currency).build();
     }
 
-    private Money convertCurrencyToTargetCurrency(final double conversionRate, final String targetCurrency) {
+    public Money convertCurrencyToTargetCurrency(final double conversionRate, final String targetCurrency) {
         return Money.builder().amount(amount * conversionRate).currency(targetCurrency).build();
     }
 
-    private Money sum(final Money other) {
+    public Money sum(final Money other) {
         final String moneyCurrency = other.currency;
         if (!moneyCurrency.equals(currency)) {
             throw new RuntimeException();
