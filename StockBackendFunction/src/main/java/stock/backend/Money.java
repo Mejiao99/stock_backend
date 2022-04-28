@@ -21,12 +21,13 @@ public class Money {
         return Money.builder().amount(amount * conversionRate).currency(targetCurrency).build();
     }
 
-    private Money sum(final Money money) {
-        final String moneyCurrency = money.currency;
-        if (moneyCurrency.equals(currency)) {
-            return Money.builder().amount(amount + money.amount).currency(moneyCurrency).build();
+    private Money sum(final Money other) {
+        final String moneyCurrency = other.currency;
+        if (!moneyCurrency.equals(currency)) {
+            throw new RuntimeException();
         }
-        throw new RuntimeException();
+        return Money.builder().amount(amount + other.amount).currency(moneyCurrency).build();
+
     }
 
 }
