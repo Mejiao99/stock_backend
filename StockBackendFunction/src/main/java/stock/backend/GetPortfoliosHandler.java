@@ -73,7 +73,6 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         return totalPerCurrency;
     }
 
-
     private Money sumListMoney(List<Money> monies, String currency) {
         double total = 0.0;
         for (Money money : monies) {
