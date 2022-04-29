@@ -33,13 +33,7 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
     private Map<String, GetTableResponse> generateTablePerPortfolioDefinition(GetPortfolioResponse getPortfolioResponse) {
         Map<String, GetTableResponse> response = new HashMap<>();
         for (PortfolioDefinition portfolioDefinition : getPortfolioResponse.getPortfolios()) {
-            List<String> currencyList = new ArrayList<>();
-            currencyList.add("cad");
-            currencyList.add("usd");
             List<String> accountTickets = getTickets(portfolioDefinition);
-            Map<String, Money> portfolioStocks = getPortfolioStocks(portfolioDefinition, getPortfolioResponse.getStockPrices(), accountTickets);
-            System.err.println(portfolioStocks);
-            System.err.println(totalPerCurrency(portfolioStocks, currencyList));
             response.put(portfolioDefinition.getId(), GetTableResponse.builder()
                     .accounts(getAccounts(portfolioDefinition))
                     .tickets(accountTickets)
@@ -81,10 +75,10 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         return accountMoney;
     }
 
-    private Map<String, Money> totalPerCurrency(Map<String, Money> portfolioStocks, List<String> currencyList) {
-        Map<String, Money> totalPerCurrency = new HashMap<>();
+    public List<Money> perCurrencyTotalList(Map<String, Money> portfolioStocks, List<String> currencyList) {
+        List<Money> totalPerCurrency = new ArrayList<>();
         for (String currency : currencyList) {
-            totalPerCurrency.put(currency, sumListMoney(stockPerCurrencyList(portfolioStocks, currency), currency));
+            totalPerCurrency.add(sumListMoney(perCurrencyList(portfolioStocks, currency), currency));
         }
         return totalPerCurrency;
     }
@@ -97,7 +91,7 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         return total;
     }
 
-    private List<Money> stockPerCurrencyList(Map<String, Money> portfolioStocks, String currency) {
+    public List<Money> perCurrencyList(Map<String, Money> portfolioStocks, String currency) {
         List<Money> result = new ArrayList<>();
         for (Map.Entry<String, Money> currentMoney : portfolioStocks.entrySet()) {
             if (currentMoney.getValue().getCurrency().equals(currency)) {
