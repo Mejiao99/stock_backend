@@ -65,7 +65,7 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
                 .build();
     }
 
-    private Map<String, Money> getPortfolioStocks(PortfolioDefinition portfolioDefinition, Map<String, Money> stockPrices, List<String> accountTickets) {
+    private Map<String, Money> getMoneyPerTicket(PortfolioDefinition portfolioDefinition, Map<String, Money> stockPrices, List<String> accountTickets) {
         Map<String, Money> accountMoney = new HashMap<>();
         for (Account account : portfolioDefinition.getAccounts()) {
             for (String ticket : accountTickets) {
@@ -75,12 +75,14 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         return accountMoney;
     }
 
-    public List<Money> perCurrencyTotalList(Map<String, Money> portfolioStocks, List<String> currencyList) {
-        List<Money> totalPerCurrency = new ArrayList<>();
-        for (String currency : currencyList) {
-            totalPerCurrency.add(sumListMoney(perCurrencyList(portfolioStocks, currency), currency));
+    public Map<String, List<Money>> classifyMoneyPerCurrency(List<Money> moneyList) {
+        Map<String, Money> moneyPerCurrency = new HashMap<>();
+        Map<String,List<Money>> moneyMapList = new HashMap<>();
+        for (Money currentMoney : moneyList) {
+            moneyMapList.computeIfAbsent(currentMoney.getCurrency(), s -> new ArrayList<>()).add(currentMoney);
         }
-        return totalPerCurrency;
+        System.err.println(moneyMapList);
+        return moneyMapList;
     }
 
     private Money sumListMoney(List<Money> monies, String currency) {
@@ -91,11 +93,11 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         return total;
     }
 
-    public List<Money> perCurrencyList(Map<String, Money> portfolioStocks, String currency) {
+    public List<Money> perCurrencyList(Map<String, Money> moneyPerTicket, String currency) {
         List<Money> result = new ArrayList<>();
-        for (Map.Entry<String, Money> currentMoney : portfolioStocks.entrySet()) {
-            if (currentMoney.getValue().getCurrency().equals(currency)) {
-                result.add(currentMoney.getValue());
+        for (Money currentMoney : moneyPerTicket.values()) {
+            if (currentMoney.getCurrency().equals(currency)) {
+                result.add(currentMoney);
             }
         }
         return result;
