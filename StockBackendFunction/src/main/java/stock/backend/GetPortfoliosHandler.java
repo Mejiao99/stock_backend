@@ -85,10 +85,6 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         return moneyPerTicket;
     }
 
-    public Money ticketToMoney(String ticket, Map<String, Money> stockPrices) {
-        return Money.builder().amount(0).currency(stockPrices.get(ticket).getCurrency()).build();
-    }
-
     public Map<String, Double> totalAmountTickets(List<Account> accounts) {
         Map<String, Double> totalAmountTickets = new HashMap<>();
         for (Account account : accounts) {
