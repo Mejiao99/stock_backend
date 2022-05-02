@@ -43,6 +43,22 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         return response;
     }
 
+    public Map<String, Money> classifyMoneyPerCurrency(List<Money> moneyList) {
+        Map<String, Money> moneyPerCurrency = new HashMap<>();
+
+        for (Money money : moneyList) {
+            final Money currentValue;
+            if (moneyPerCurrency.get(money.getCurrency()) == null) {
+                currentValue = Money.builder().amount(0).currency(money.getCurrency()).build();
+            } else {
+                currentValue = moneyPerCurrency.get(money.getCurrency());
+            }
+            final Money newValue = currentValue.sum(money);
+            moneyPerCurrency.put(currentValue.getCurrency(), newValue);
+        }
+        return moneyPerCurrency;
+    }
+
     private Totals calculateTotals(PortfolioDefinition portfolioDefinition, GetPortfolioResponse getPortfolioResponse, List<String> accountTickets) {
         return Totals.builder()
                 .accounts(accountTotals(
