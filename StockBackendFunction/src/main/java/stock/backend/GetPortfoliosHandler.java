@@ -73,15 +73,14 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
     }
 
     public Map<String, Money> classifyMoneyPerTicket(List<Account> accounts, Map<String, Money> stockPrices) {
-        Map<String,Money> moneyPerTicket = new HashMap<>();
+        Map<String, Money> moneyPerTicket = new HashMap<>();
         Map<String, Double> totalAmountPortfolio = totalAmountTickets(accounts);
 
-        for (Map.Entry<String,Double> entry :totalAmountPortfolio.entrySet()){
+        for (Map.Entry<String, Double> entry : totalAmountPortfolio.entrySet()) {
             Money stock = stockPrices.get(entry.getKey());
             double totalAmount = stockPrices.get(entry.getKey()).getAmount() * entry.getValue();
-            moneyPerTicket.put(entry.getKey(),Money.builder().currency(stock.getCurrency()).amount(totalAmount).build());
+            moneyPerTicket.put(entry.getKey(), Money.builder().currency(stock.getCurrency()).amount(totalAmount).build());
         }
-
         return moneyPerTicket;
     }
 
