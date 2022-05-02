@@ -72,6 +72,33 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         return moneyPerCurrency;
     }
 
+    public Map<String, Money> classifyMoneyPerTicket(List<Account> accounts, Map<String, Money> stockPrices) {
+        Map<String,Money> moneyPerTicket = new HashMap<>();
+        Map<String, Double> totalAmountPortfolio = totalAmountTickets(accounts);
+
+        for (Map.Entry<String,Double> entry :totalAmountPortfolio.entrySet()){
+            Money stock = stockPrices.get(entry.getKey());
+            double totalAmount = stockPrices.get(entry.getKey()).getAmount() * entry.getValue();
+            moneyPerTicket.put(entry.getKey(),Money.builder().currency(stock.getCurrency()).amount(totalAmount).build());
+        }
+
+        return moneyPerTicket;
+    }
+
+    public Money ticketToMoney(String ticket, Map<String, Money> stockPrices) {
+        return Money.builder().amount(0).currency(stockPrices.get(ticket).getCurrency()).build();
+    }
+
+    public Map<String, Double> totalAmountTickets(List<Account> accounts) {
+        Map<String, Double> totalAmountTickets = new HashMap<>();
+        for (Account account : accounts) {
+            for (Map.Entry<String, Double> entry : account.getHoldings().entrySet()) {
+                totalAmountTickets.merge(entry.getKey(), entry.getValue(), Double::sum);
+            }
+        }
+        return totalAmountTickets;
+    }
+
     private List<Money> ticketsTotals(PortfolioDefinition portfolioDefinition, Map<String, Money> stockPrices, Map<String, Double> conversionRates, String targetCurrency, List<String> tickets) {
         List<Money> ticketsTotals = new ArrayList<>();
 
