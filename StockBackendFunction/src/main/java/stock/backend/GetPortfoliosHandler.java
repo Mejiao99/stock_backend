@@ -68,7 +68,7 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
 
     public Map<String, Money> classifyMoneyPerCurrency(List<Money> moneyList) {
         Map<String, Money> moneyPerCurrency = new HashMap<>();
-        moneyList.forEach( money ->  moneyPerCurrency.merge(money.getCurrency(), money, (oldValue, newValue) -> oldValue.sum(money)));
+        moneyList.forEach(money -> moneyPerCurrency.merge(money.getCurrency(), money, (oldValue, newValue) -> oldValue.sum(money)));
         return moneyPerCurrency;
     }
 
