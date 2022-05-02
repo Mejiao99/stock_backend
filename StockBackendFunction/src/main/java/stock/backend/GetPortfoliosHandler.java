@@ -45,12 +45,16 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
 
     public Map<String, Money> classifyMoneyPerCurrency(List<Money> moneyList) {
         Map<String, Money> moneyPerCurrency = new HashMap<>();
-        for (Money currentMoney : moneyList) {
-            if (moneyPerCurrency.get(currentMoney.getCurrency()) == null){
-                moneyPerCurrency.put(currentMoney.getCurrency(), Money.builder().amount(0).currency(currentMoney.getCurrency()).build());
+
+        for (Money money : moneyList) {
+            final Money currentValue;
+            if (moneyPerCurrency.get(money.getCurrency()) == null) {
+                currentValue = Money.builder().amount(0).currency(money.getCurrency()).build();
             } else {
-                moneyPerCurrency.get(currentMoney.getCurrency()).sum(currentMoney);
+                currentValue = moneyPerCurrency.get(money.getCurrency());
             }
+            final Money newValue = currentValue.sum(money);
+            moneyPerCurrency.put(currentValue.getCurrency(), newValue);
         }
         return moneyPerCurrency;
     }
