@@ -27,9 +27,13 @@ class GetPortfoliosHandlerTest {
         Map<String, Money> moneyPerCurrency = handler.classifyMoneyPerCurrency(moneyList);
         assertNotNull(moneyPerCurrency);
         assertEquals(moneyPerCurrency.size() , 2);
-        assertEquals(moneyPerCurrency.get("usd").getAmount() , 7);
-        assertEquals(moneyPerCurrency.get("cad").getAmount() , 7);
+        assertEquals(moneyPerCurrency.get("usd") , validateMoney());
+        assertEquals(moneyPerCurrency.get("cad") , 7);
     }
+    private void validateMoney(Money money, double amount, String currency) {
+        assertEquals(amount, money.getAmount());
+        assertEquals(currency, money.getCurrency());
 
+    }
 
 }
