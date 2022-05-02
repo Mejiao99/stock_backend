@@ -43,12 +43,6 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         return response;
     }
 
-    public Map<String, Money> classifyMoneyPerCurrency(List<Money> moneyList) {
-        Map<String, Money> moneyPerCurrency = new HashMap<>();
-        moneyList.forEach( money ->
-                moneyPerCurrency.merge(money.getCurrency(), money, (oldValue, newValue) -> oldValue.sum(money)));
-        return moneyPerCurrency;
-    }
 
     private Totals calculateTotals(PortfolioDefinition portfolioDefinition, GetPortfolioResponse getPortfolioResponse, List<String> accountTickets) {
         return Totals.builder()
@@ -70,6 +64,12 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
                         .currency("")
                         .build())
                 .build();
+    }
+
+    public Map<String, Money> classifyMoneyPerCurrency(List<Money> moneyList) {
+        Map<String, Money> moneyPerCurrency = new HashMap<>();
+        moneyList.forEach( money ->  moneyPerCurrency.merge(money.getCurrency(), money, (oldValue, newValue) -> oldValue.sum(money)));
+        return moneyPerCurrency;
     }
 
     private List<Money> ticketsTotals(PortfolioDefinition portfolioDefinition, Map<String, Money> stockPrices, Map<String, Double> conversionRates, String targetCurrency, List<String> tickets) {
