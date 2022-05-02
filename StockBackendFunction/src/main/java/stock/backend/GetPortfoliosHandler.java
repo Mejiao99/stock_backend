@@ -43,6 +43,11 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         return response;
     }
 
+    public Map<String, List<Money>> classifyMoneyPerCurrency(List<Money> moneyList) {
+
+
+    }
+
     private Totals calculateTotals(PortfolioDefinition portfolioDefinition, GetPortfolioResponse getPortfolioResponse, List<String> accountTickets) {
         return Totals.builder()
                 .accounts(accountTotals(
