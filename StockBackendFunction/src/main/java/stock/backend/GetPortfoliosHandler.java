@@ -43,7 +43,7 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         return response;
     }
 
-
+    // This method returns the totals of the portfolio
     private Totals calculateTotals(PortfolioDefinition portfolioDefinition, GetPortfolioResponse getPortfolioResponse, List<String> accountTickets) {
         List<Money> accountTotals = accountTotals(
                 portfolioDefinition,
@@ -54,11 +54,12 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         return Totals.builder()
                 .accounts(accountTotals)
                 .tickets(ticketsTotals(portfolioDefinition.getAccounts(), getPortfolioResponse.getStockPrices()))
-                .total(calculateTotalPortfolio(accountTotals, getPortfolioResponse.getTargetCurrency()))
+                .total(calculateTotalHoldingPortfolio(accountTotals, getPortfolioResponse.getTargetCurrency()))
                 .build();
     }
 
-    private Money calculateTotalPortfolio(List<Money> accountTotals, String targetCurrency) {
+    // This method returns the total holding in the portfolio
+    private Money calculateTotalHoldingPortfolio(List<Money> accountTotals, String targetCurrency) {
         Money total = Money.builder().amount(0).currency(targetCurrency).build();
         for (Money money : accountTotals) {
             total = total.sum(money);
@@ -66,6 +67,7 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         return total;
     }
 
+    // This method returns a map with key ticketName and totalMoney per currency in the portfolio
     public Map<String, Money> classifyMoneyPerCurrency(Map<String, Money> totalMoneyPerTicket) {
         Map<String, Money> moneyPerCurrency = new HashMap<>();
         List<Money> moneyList = new ArrayList<>(totalMoneyPerTicket.values());
@@ -73,6 +75,7 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         return moneyPerCurrency;
     }
 
+    // This method returns a map with key ticketName and totalMoney of the ticket in the portfolio
     public Map<String, Money> classifyMoneyPerTicket(List<Account> accounts, Map<String, Money> stockPrices) {
         Map<String, Money> moneyPerTicket = new HashMap<>();
         Map<String, Double> totalTicketsQtyInPortfolio = totalTicketsQtyInPortfolio(accounts);
@@ -86,6 +89,7 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         return moneyPerTicket;
     }
 
+    // this method returns a map with key ticketName and totalQty of the ticket in the portfolio
     public Map<String, Double> totalTicketsQtyInPortfolio(List<Account> accounts) {
         Map<String, Double> totalAmountTickets = new HashMap<>();
         for (Account account : accounts) {
@@ -96,15 +100,15 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         return totalAmountTickets;
     }
 
+    // This method returns a list with the total amount per ticket.
     private List<Money> ticketsTotals(List<Account> accounts, Map<String, Money> stockPrices) {
         List<Money> ticketsTotals = new ArrayList<>();
         final Map<String, Money> moneyPerTicket = classifyMoneyPerTicket(accounts, stockPrices);
         ticketsTotals.addAll(moneyPerTicket.values());
-//        ticketsTotals.addAll(classifyMoneyPerCurrency(moneyPerTicket).values());
-
         return ticketsTotals;
     }
 
+    // This method returns a list with totals per existing account the portfolioDefinition
     private List<Money> accountTotals(PortfolioDefinition portfolioDefinition, Map<String, Money> stockPrices, Map<String, Double> conversionRates, String targetCurrency, List<String> tickets) {
         List<Money> accountTotals = new ArrayList<>();
         for (Account account : portfolioDefinition.getAccounts()) {
@@ -114,6 +118,7 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         return accountTotals;
     }
 
+    // This method calculate the total amount given an accountHolding in the targetCurrency
     private Money calculateAccountTotal(List<Money> accountHoldings, Map<String, Double> conversionRates, String currencyTarget) {
         double total = 0.0;
         for (Money money : accountHoldings) {
@@ -126,6 +131,7 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         return Money.builder().amount(total).currency(currencyTarget).build();
     }
 
+    // This method returns a matrix with the existing money in the portfolio accounts.
     private List<List<Money>> generatePortfolioData(PortfolioDefinition portfolioDefinition, Map<String, Money> stockPrices, List<String> accountTickets) {
         List<List<Money>> portfolioData = new ArrayList<>();
         for (Account account : portfolioDefinition.getAccounts()) {
@@ -134,6 +140,7 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         return portfolioData;
     }
 
+    // This method calculate the total amount of holding given an account
     private List<Money> calculateAccountHoldings(Map<String, Double> holdings, Map<String, Money> stockPrices, List<String> accountTickets) {
         List<Money> accountMoney = new ArrayList<>();
         for (String ticket : accountTickets) {
@@ -142,6 +149,7 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         return accountMoney;
     }
 
+    // This method calculate the total amount given a ticket.
     private Money calculateTotalAmountTicket(String ticket, Map<String, Money> stockPrices, Map<String, Double> holdings) {
         Double accountHoldingAmount = holdings.get(ticket);
         Money stockMoney = stockPrices.get(ticket);
@@ -151,6 +159,7 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         return Money.builder().amount(accountHoldingAmount * stockMoney.getAmount()).currency(stockMoney.getCurrency()).build();
     }
 
+    // This method returns all ticket names existing in a portfolioDefinition without duplicates
     private List<String> getTickets(PortfolioDefinition portfolioDefinition) {
         Set<String> ticketSet = new HashSet<>();
         for (Account account : portfolioDefinition.getAccounts()) {
@@ -159,6 +168,7 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         return new ArrayList<>(ticketSet);
     }
 
+    // This method returns all existing account id in a portfolioDefinition
     private List<String> getAccounts(PortfolioDefinition portfolioDefinition) {
         List<String> accountList = new ArrayList<>();
         for (Account account : portfolioDefinition.getAccounts()) {
