@@ -45,37 +45,38 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
 
 
     private Totals calculateTotals(PortfolioDefinition portfolioDefinition, GetPortfolioResponse getPortfolioResponse, List<String> accountTickets) {
+        List<Money> accountTotals = accountTotals(
+                portfolioDefinition,
+                getPortfolioResponse.getStockPrices(),
+                getPortfolioResponse.getConversionRates(),
+                getPortfolioResponse.getTargetCurrency(),
+                accountTickets);
         return Totals.builder()
-                .accounts(accountTotals(
-                        portfolioDefinition,
-                        getPortfolioResponse.getStockPrices(),
-                        getPortfolioResponse.getConversionRates(),
-                        getPortfolioResponse.getTargetCurrency(),
-                        accountTickets))
-                .tickets(ticketsTotals(
-                        portfolioDefinition,
-                        getPortfolioResponse.getStockPrices(),
-                        getPortfolioResponse.getConversionRates(),
-                        getPortfolioResponse.getTargetCurrency(),
-                        accountTickets
-                ))
-                .total(Money.builder()
-                        .amount(0)
-                        .currency("")
-                        .build())
+                .accounts(accountTotals)
+                .tickets(ticketsTotals(portfolioDefinition.getAccounts(), getPortfolioResponse.getStockPrices()))
+                .total(calculateTotalPortfolio(accountTotals, getPortfolioResponse.getTargetCurrency()))
                 .build();
     }
 
-    public Map<String, Money> classifyMoneyPerCurrency(List<Money> moneyList) {
+    private Money calculateTotalPortfolio(List<Money> accountTotals, String targetCurrency) {
+        Money total = Money.builder().amount(0).currency(targetCurrency).build();
+        for (Money money : accountTotals) {
+            total = total.sum(money);
+        }
+        return total;
+    }
+
+    public Map<String, Money> classifyMoneyPerCurrency(Map<String, Money> totalMoneyPerTicket) {
         Map<String, Money> moneyPerCurrency = new HashMap<>();
+        List<Money> moneyList = new ArrayList<>(totalMoneyPerTicket.values());
         moneyList.forEach(money -> moneyPerCurrency.merge(money.getCurrency(), money, (oldValue, newValue) -> oldValue.sum(money)));
         return moneyPerCurrency;
     }
 
     public Map<String, Money> classifyMoneyPerTicket(List<Account> accounts, Map<String, Money> stockPrices) {
         Map<String, Money> moneyPerTicket = new HashMap<>();
-        Map<String, Double> totalAmountPortfolio = totalAmountTickets(accounts);
-        totalAmountPortfolio.entrySet().forEach(stringDoubleEntry ->
+        Map<String, Double> totalTicketsQtyInPortfolio = totalTicketsQtyInPortfolio(accounts);
+        totalTicketsQtyInPortfolio.entrySet().forEach(stringDoubleEntry ->
                 moneyPerTicket.computeIfAbsent(
                         stringDoubleEntry.getKey(), k ->
                                 Money.builder()
@@ -85,7 +86,7 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         return moneyPerTicket;
     }
 
-    public Map<String, Double> totalAmountTickets(List<Account> accounts) {
+    public Map<String, Double> totalTicketsQtyInPortfolio(List<Account> accounts) {
         Map<String, Double> totalAmountTickets = new HashMap<>();
         for (Account account : accounts) {
             for (Map.Entry<String, Double> entry : account.getHoldings().entrySet()) {
@@ -95,8 +96,11 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         return totalAmountTickets;
     }
 
-    private List<Money> ticketsTotals(PortfolioDefinition portfolioDefinition, Map<String, Money> stockPrices, Map<String, Double> conversionRates, String targetCurrency, List<String> tickets) {
+    private List<Money> ticketsTotals(List<Account> accounts, Map<String, Money> stockPrices) {
         List<Money> ticketsTotals = new ArrayList<>();
+        final Map<String, Money> moneyPerTicket = classifyMoneyPerTicket(accounts, stockPrices);
+        ticketsTotals.addAll(moneyPerTicket.values());
+//        ticketsTotals.addAll(classifyMoneyPerCurrency(moneyPerTicket).values());
 
         return ticketsTotals;
     }

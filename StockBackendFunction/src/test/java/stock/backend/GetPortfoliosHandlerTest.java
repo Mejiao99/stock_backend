@@ -54,19 +54,19 @@ class GetPortfoliosHandlerTest {
 
     @Test
     void classifyMoneyPerCurrency() {
-        Map<String, Money> moneyPerCurrency = handler.classifyMoneyPerCurrency(moneyList);
+        Map<String, Money> classifyMoneyPerTicket = handler.classifyMoneyPerTicket(accounts, stockPrices);
+        Map<String, Money> moneyPerCurrency = handler.classifyMoneyPerCurrency(classifyMoneyPerTicket);
 
         assertNotNull(moneyPerCurrency);
-        assertEquals(moneyPerCurrency.size(), 3);
+        assertEquals(moneyPerCurrency.size(), 2);
 
-        validateMoney(moneyPerCurrency.get("usd"), 14, "usd");
-        validateMoney(moneyPerCurrency.get("cad"), 20, "cad");
-        validateMoney(moneyPerCurrency.get("eur"), 5, "eur");
+        validateMoney(moneyPerCurrency.get("usd"), 76, "usd");
+        validateMoney(moneyPerCurrency.get("cad"), 18, "cad");
     }
 
     @Test
     void totalAmountTickets() {
-        Map<String, Double> totalAmountTickets = handler.totalAmountTickets(accounts);
+        Map<String, Double> totalAmountTickets = handler.totalTicketsQtyInPortfolio(accounts);
         assertNotNull(totalAmountTickets);
         assertEquals(totalAmountTickets.size(), 4);
         assertEquals(totalAmountTickets.get("TicketA"), 4);
