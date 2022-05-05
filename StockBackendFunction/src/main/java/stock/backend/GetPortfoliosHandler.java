@@ -76,13 +76,12 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         Map<String, Money> moneyPerTicket = new HashMap<>();
         Map<String, Double> totalAmountPortfolio = totalAmountTickets(accounts);
         totalAmountPortfolio.entrySet().forEach(stringDoubleEntry ->
-                moneyPerTicket.merge(
-                        stringDoubleEntry.getKey(),
-                        Money.builder()
-                                .currency(stockPrices.get(stringDoubleEntry.getKey()).getCurrency())
-                                .amount(stockPrices.get(stringDoubleEntry.getKey()).getAmount() * stringDoubleEntry.getValue())
-                                .build(),
-                        (oldValue, newValue) -> newValue));
+                moneyPerTicket.computeIfAbsent(
+                        stringDoubleEntry.getKey(), k ->
+                                Money.builder()
+                                        .currency(stockPrices.get(stringDoubleEntry.getKey()).getCurrency())
+                                        .amount(stockPrices.get(stringDoubleEntry.getKey()).getAmount() * stringDoubleEntry.getValue())
+                                        .build()));
         return moneyPerTicket;
     }
 
