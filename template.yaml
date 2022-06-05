@@ -38,7 +38,7 @@ Resources:
         StockBackend:
           Type: Api
           Properties:
-            Path: /market
+            Path: /recalculate
             Method: get
   PortfolioDefinitionsTable:
     Type: AWS::Serverless::SimpleTable
