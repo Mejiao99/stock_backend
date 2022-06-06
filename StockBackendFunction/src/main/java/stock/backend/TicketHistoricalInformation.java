@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetMarketResponse {
-    private String data;
-    private TicketHistoricalInformation ticket;
+public class TicketHistoricalInformation {
+    private double end;
+    private boolean valid;
 }
