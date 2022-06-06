@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TicketHistoricalInformation {
-    private double end;
     private boolean valid;
+    private double end;
 }

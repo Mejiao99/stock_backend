@@ -55,7 +55,7 @@ Resources:
     Properties:
       TableName: StockMarket
       PrimaryKey:
-        Name: ticketPerDate
+        Name: ticketDate
         Type: String
 
 Outputs:

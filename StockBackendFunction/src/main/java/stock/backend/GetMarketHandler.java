@@ -19,7 +19,7 @@ public class GetMarketHandler extends AbstractRequestHandler<GetMarketResponse> 
         String value = "AMZN-2022-05-30";
         final String contents = readContents(value);
         TicketHistoricalInformation response = convertFromJson(contents);
-        return GetMarketResponse.builder().data("hello world!").ticket(response).build();
+        return GetMarketResponse.builder().data("hello world!").build();
     }
 
     private String readContents(String value) {

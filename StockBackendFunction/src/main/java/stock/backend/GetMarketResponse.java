@@ -11,5 +11,4 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class GetMarketResponse {
     private String data;
-    private TicketHistoricalInformation ticket;
 }
