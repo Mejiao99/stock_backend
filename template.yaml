@@ -29,20 +29,6 @@ Resources:
           Properties:
             Path: /portfolios
             Method: get
-  MarketFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: StockBackendFunction
-      Handler: stock.backend.GetMarketHandler::handleRequest
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref StockMarketTable
-      Events:
-        StockBackend:
-          Type: Api
-          Properties:
-            Path: /recalculate
-            Method: get
   PortfolioDefinitionsTable:
     Type: AWS::Serverless::SimpleTable
     Properties:
@@ -50,6 +36,17 @@ Resources:
       PrimaryKey:
         Name: userId
         Type: String
+  MarketFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: StockBackendFunction
+      Handler: stock.backend.GetMarketHandler::handleRequest
+      Events:
+        StockBackend:
+          Type: Api
+          Properties:
+            Path: /recalculate
+            Method: get
   StockMarketTable:
     Type: AWS::Serverless::SimpleTable
     Properties:
