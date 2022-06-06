@@ -41,6 +41,9 @@ Resources:
     Properties:
       CodeUri: StockBackendFunction
       Handler: stock.backend.GetMarketHandler::handleRequest
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref StockMarketTable
       Events:
         StockBackend:
           Type: Api
