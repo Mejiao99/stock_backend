@@ -11,14 +11,16 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class GetMarketHandler extends AbstractRequestHandler<GetMarketResponse> {
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final GetPortfoliosHandler getPortfoliosHandler = new GetPortfoliosHandler();
 
     @Override
     protected GetMarketResponse getResponse(APIGatewayProxyRequestEvent input, Context context) {
-        String value = "AMZN-2022-05-30";
-        final String contents = readContents(value);
-        TicketHistoricalInformation response = convertFromJson(contents);
+        System.err.println(getTickets(getPortfoliosHandler.getResponse(input, context)));
         return GetMarketResponse.builder().data("hello world!").build();
     }
 
@@ -40,5 +42,16 @@ public class GetMarketHandler extends AbstractRequestHandler<GetMarketResponse> 
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private Set<String> getTickets(GetPortfolioResponse getPortfolioResponse) {
+        Set<String> tickets = new HashSet<>();
+        for (PortfolioDefinition portfolioDefinition : getPortfolioResponse.getPortfolios()) {
+            tickets.addAll(portfolioDefinition.getTargetHoldings().keySet());
+            for (Account account : portfolioDefinition.getAccounts()) {
+                tickets.addAll(account.getHoldings().keySet());
+            }
+        }
+        return tickets;
     }
 }
