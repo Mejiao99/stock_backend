@@ -32,24 +32,6 @@ public class GetMarketHandler extends AbstractRequestHandler<GetMarketResponse> 
         return GetMarketResponse.builder().data("hello world!").build();
     }
 
-//    private String readContents() {
-//        AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
-//                .build();
-//        DynamoDB dynamoDB = new DynamoDB(client);
-//        Table table = dynamoDB.getTable("StockMarket");
-//        Item row = table.getItem(new KeyAttribute("ticketPerDate", "value"));
-//        String contents = row.getString("contents");
-//        return contents;
-//    }
-//
-//    private TicketHistoricalInformation convertFromJson(String json) {
-//        try {
-//            return objectMapper.readValue(json, TicketHistoricalInformation.class);
-//        } catch (JsonProcessingException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-
     private Set<String> getTickets(GetPortfolioResponse getPortfolioResponse) {
         Set<String> tickets = new HashSet<>();
         for (PortfolioDefinition portfolioDefinition : getPortfolioResponse.getPortfolios()) {
@@ -75,16 +57,12 @@ public class GetMarketHandler extends AbstractRequestHandler<GetMarketResponse> 
         return result;
     }
 
-
     private void putItemInTable(List<Item> items) {
         AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
                 .build();
         DynamoDB dynamoDB = new DynamoDB(client);
         TableWriteItems writeItems = new TableWriteItems("StockMarket").withItemsToPut(items);
         dynamoDB.batchWriteItem(writeItems);
-//        Table table = dynamoDB.getTable("StockMarket");
-//
-//        table.putItem(item);
     }
 
     @Override
@@ -104,23 +82,4 @@ public class GetMarketHandler extends AbstractRequestHandler<GetMarketResponse> 
         double randomDouble = Math.random() * (20 - 1 + 1) + 1;
         return Money.builder().currency(targetCurrency).amount(randomDouble).build();
     }
-
-    //    private String readContents() {
-//        AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
-//                .build();
-//        DynamoDB dynamoDB = new DynamoDB(client);
-//        Table table = dynamoDB.getTable("StockMarket");
-//        Item row = table.getItem(new KeyAttribute("ticketPerDate", "value"));
-//        String contents = row.getString("contents");
-//        return contents;
-//    }
-//
-//    private TicketHistoricalInformation convertFromJson(String json) {
-//        try {
-//            return objectMapper.readValue(json, TicketHistoricalInformation.class);
-//        } catch (JsonProcessingException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-
 }
