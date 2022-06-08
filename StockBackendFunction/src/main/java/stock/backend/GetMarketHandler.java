@@ -4,45 +4,51 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
-import com.amazonaws.services.dynamodbv2.document.KeyAttribute;
-import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.document.TableWriteItems;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-public class GetMarketHandler extends AbstractRequestHandler<GetMarketResponse> {
+public class GetMarketHandler extends AbstractRequestHandler<GetMarketResponse> implements Market {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final GetPortfoliosHandler getPortfoliosHandler = new GetPortfoliosHandler();
 
+
     @Override
     protected GetMarketResponse getResponse(APIGatewayProxyRequestEvent input, Context context) {
-        System.err.println(getTickets(getPortfoliosHandler.getResponse(input, context)));
+        List<String> tickets = new ArrayList<>(getTickets(getPortfoliosHandler.getResponse(input, context)));
+        calculateStockPrices(tickets, LocalDate.now(), "CAD");
+        Map<String, Money> stockPrices = calculateStockPrices(tickets, LocalDate.now(), "CAD");
+        List<Item> itemList = makeItemsFromStock(stockPrices);
+        putItemInTable(itemList);
         return GetMarketResponse.builder().data("hello world!").build();
     }
 
-    private String readContents(String value) {
-        AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
-                .build();
-        DynamoDB dynamoDB = new DynamoDB(client);
-        Table table = dynamoDB.getTable("StockMarket");
-
-        Item row = table.getItem(new KeyAttribute("ticketPerDate", value));
-
-        String contents = row.getString("contents");
-        return contents;
-    }
-
-    private TicketHistoricalInformation convertFromJson(String json) {
-        try {
-            return objectMapper.readValue(json, TicketHistoricalInformation.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    private String readContents() {
+//        AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
+//                .build();
+//        DynamoDB dynamoDB = new DynamoDB(client);
+//        Table table = dynamoDB.getTable("StockMarket");
+//        Item row = table.getItem(new KeyAttribute("ticketPerDate", "value"));
+//        String contents = row.getString("contents");
+//        return contents;
+//    }
+//
+//    private TicketHistoricalInformation convertFromJson(String json) {
+//        try {
+//            return objectMapper.readValue(json, TicketHistoricalInformation.class);
+//        } catch (JsonProcessingException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     private Set<String> getTickets(GetPortfolioResponse getPortfolioResponse) {
         Set<String> tickets = new HashSet<>();
@@ -54,4 +60,67 @@ public class GetMarketHandler extends AbstractRequestHandler<GetMarketResponse> 
         }
         return tickets;
     }
+
+    private Item makeItem(String ticket, Money money) {
+        return new Item()
+                .withPrimaryKey("ticketDate", ticket)
+                .withString("content", money.toString());
+    }
+
+    private List<Item> makeItemsFromStock(Map<String, Money> stockPrices) {
+        List<Item> result = new ArrayList<>();
+        for (Map.Entry<String, Money> stock : stockPrices.entrySet()) {
+            result.add(makeItem(stock.getKey(), stock.getValue()));
+        }
+        return result;
+    }
+
+
+    private void putItemInTable(List<Item> items) {
+        AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
+                .build();
+        DynamoDB dynamoDB = new DynamoDB(client);
+        TableWriteItems writeItems = new TableWriteItems("StockMarket").withItemsToPut(items);
+        dynamoDB.batchWriteItem(writeItems);
+//        Table table = dynamoDB.getTable("StockMarket");
+//
+//        table.putItem(item);
+    }
+
+    @Override
+    public Map<String, Money> calculateStockPrices(List<String> tickets, LocalDate date, String targetCurrency) {
+        Map<String, Money> result = new HashMap<>();
+        for (String ticket : tickets) {
+            result.put(ticketSumDate(ticket, date), calculateTicketValue(ticket, date, targetCurrency));
+        }
+        return result;
+    }
+
+    private String ticketSumDate(String ticket, LocalDate date) {
+        return ticket + "-" + date.toString();
+    }
+
+    private Money calculateTicketValue(String ticket, LocalDate date, String targetCurrency) {
+        double randomDouble = Math.random() * (20 - 1 + 1) + 1;
+        return Money.builder().currency(targetCurrency).amount(randomDouble).build();
+    }
+
+    //    private String readContents() {
+//        AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
+//                .build();
+//        DynamoDB dynamoDB = new DynamoDB(client);
+//        Table table = dynamoDB.getTable("StockMarket");
+//        Item row = table.getItem(new KeyAttribute("ticketPerDate", "value"));
+//        String contents = row.getString("contents");
+//        return contents;
+//    }
+//
+//    private TicketHistoricalInformation convertFromJson(String json) {
+//        try {
+//            return objectMapper.readValue(json, TicketHistoricalInformation.class);
+//        } catch (JsonProcessingException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+
 }
