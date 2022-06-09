@@ -4,9 +4,11 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.TableWriteItems;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDate;
@@ -25,10 +27,11 @@ public class GetMarketHandler extends AbstractRequestHandler<GetMarketResponse> 
     @Override
     protected GetMarketResponse getResponse(APIGatewayProxyRequestEvent input, Context context) {
         List<String> tickets = new ArrayList<>(getTickets(getPortfoliosHandler.getResponse(input, context)));
-        calculateStockPrices(tickets, LocalDate.now(), "CAD");
         Map<String, Money> stockPrices = calculateStockPrices(tickets, LocalDate.now(), "CAD");
         List<Item> itemList = makeItemsFromStock(stockPrices);
-        putItemInTable(itemList);
+        System.err.println(itemList);
+        putItems(itemList);
+
         return GetMarketResponse.builder().data("hello world!").build();
     }
 
@@ -44,9 +47,15 @@ public class GetMarketHandler extends AbstractRequestHandler<GetMarketResponse> 
     }
 
     private Item makeItem(String ticket, Money money) {
+        String output = null;
+        try {
+            output = objectMapper.writeValueAsString(money);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
         return new Item()
                 .withPrimaryKey("ticketDate", ticket)
-                .withString("content", money.toString());
+                .withString("value", output);
     }
 
     private List<Item> makeItemsFromStock(Map<String, Money> stockPrices) {
@@ -57,12 +66,22 @@ public class GetMarketHandler extends AbstractRequestHandler<GetMarketResponse> 
         return result;
     }
 
-    private void putItemInTable(List<Item> items) {
+    private void putItemsInTable(List<Item> items) {
         AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
                 .build();
         DynamoDB dynamoDB = new DynamoDB(client);
         TableWriteItems writeItems = new TableWriteItems("StockMarket").withItemsToPut(items);
         dynamoDB.batchWriteItem(writeItems);
+    }
+
+    private void putItems(List<Item> items) {
+        AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
+                .build();
+        DynamoDB dynamoDB = new DynamoDB(client);
+        Table table = dynamoDB.getTable("StockMarket");
+        for (Item item: items){
+            table.putItem(item);
+        }
     }
 
     @Override
@@ -75,7 +94,7 @@ public class GetMarketHandler extends AbstractRequestHandler<GetMarketResponse> 
     }
 
     private String ticketSumDate(String ticket, LocalDate date) {
-        return ticket + "-" + date.toString();
+        return ticket + "-" + date;
     }
 
     private Money calculateTicketValue(String ticket, LocalDate date, String targetCurrency) {
