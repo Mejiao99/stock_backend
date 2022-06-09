@@ -178,10 +178,7 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
     }
 
     private String readContents() {
-        AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
-                .build();
-        DynamoDB dynamoDB = new DynamoDB(client);
-        Table table = dynamoDB.getTable("PortfolioDefinitions");
+        Table table = GetMarketHandler.DYNAMO_DB.getTable("PortfolioDefinitions");
 
         Item row = table.getItem(new KeyAttribute("userId", "x@x.com"));
 
