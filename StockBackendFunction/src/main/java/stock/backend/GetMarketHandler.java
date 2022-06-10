@@ -27,8 +27,12 @@ public class GetMarketHandler extends AbstractRequestHandler<GetMarketResponse> 
 
     @Override
     protected GetMarketResponse getResponse(APIGatewayProxyRequestEvent input, Context context) {
-        List<String> tickets = new ArrayList<>(getTickets(getPortfoliosHandler.getResponse(input, context)));
-        Map<String, Money> stockPrices = new MarketRandom().calculateStockPrices(tickets, LocalDate.now(), "CAD");
+//        List<String> tickets = new ArrayList<>(getTickets(getPortfoliosHandler.getResponse(input, context)));
+//        Map<String, Money> stockPrices = new MarketRandom().calculateStockPrices(tickets, LocalDate.now(), "CAD");
+        List<String> tickets = new ArrayList<>();
+        tickets.add("XAW.TO");
+        tickets.add("XUU.TO");
+        Map<String, Money> stockPrices = new MarketYahoo().calculateStockPrices(tickets, LocalDate.now(), "CAD");
         List<Item> itemList = makeItemsFromStock(stockPrices);
         putItems(itemList);
         return GetMarketResponse.builder().data("hello world!").build();
