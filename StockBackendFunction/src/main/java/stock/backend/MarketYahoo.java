@@ -58,7 +58,7 @@ public class MarketYahoo implements Market {
     private String callSparkApi(String interval, String range, String symbols) {
         try {
 //            HttpRequest request = HttpRequest.newBuilder()
-//                    .uri(URI.create("https://yfapi.net/v8/finance/spark?interval=" + interval + "&range=" + range + "&symbols=" + symbols))
+//                    .uri(URI.create("https://yfapi.net/v6/finance/quote?region=US&lang=en" + "&symbols=" + symbols))
 //                    .header("x-api-key", System.getenv("YAHOO_API"))
 //                    .method("GET", HttpRequest.BodyPublishers.noBody())
 //                    .build();
