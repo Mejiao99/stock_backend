@@ -89,8 +89,8 @@ public class YahooFinanceResponse {
         return result;
     }
 
-    private LocalDate localDateFromTimestamp(Integer timestampLong) {
-        return ZonedDateTime.ofInstant(Instant.ofEpochSecond(timestampLong), ZoneId.of("UTC")).toLocalDate();
+    private LocalDate localDateFromTimestamp(Integer timestamp) {
+        return ZonedDateTime.ofInstant(Instant.ofEpochSecond(timestamp), ZoneId.of("UTC")).toLocalDate();
     }
 
     private Timestamp toTimestamp(LocalDate localDate) {
