@@ -26,6 +26,7 @@ public class YahooFinanceResponse {
 
     public static void main(String[] args) {
         YahooFinanceResponse response = new YahooFinanceResponse();
+        System.err.println(response.getStockHistoricalPrice("XUU.TO"));
     }
 
     private String callSparkApi(String symbols) {
@@ -50,6 +51,11 @@ public class YahooFinanceResponse {
         Map<String, TicketInformation> ticketsInformation = getYahooFinanceSparkApiResponse(sparkJson);
         YahooFinanceApiResponse yahooQuoteApiResponse = getYahooQuoteApiResponse(quoteJson);
         return null;
+    }
+
+    public Money ticketInformationToMoney(TicketInformation ticketInformation, String ticket,Double amount, YahooFinanceApiResponse response) {
+        final String currency = getTicketFromApiResponse(ticket, response);
+        return Money.builder().amount(amount).currency(currency).build();
     }
 
     private Map<String, TicketInformation> getYahooFinanceSparkApiResponse(String sparkJson) {
@@ -98,8 +104,6 @@ public class YahooFinanceResponse {
     }
 
     private List<LocalDate> datesInRange(LocalDate startDate, LocalDate endDate) {
-        List<LocalDate> result = startDate.datesUntil(endDate).collect(Collectors.toList());
-        result.add(endDate);
-        return result;
+        return startDate.datesUntil(endDate).collect(Collectors.toList());
     }
 }
