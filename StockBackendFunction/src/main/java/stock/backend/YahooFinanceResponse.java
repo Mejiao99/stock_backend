@@ -20,7 +20,7 @@ public class YahooFinanceResponse {
         YahooFinanceResponse response = new YahooFinanceResponse();
     }
 
-    private String callSparkApi(String interval, String range, String symbols) {
+    private String callSparkApi(String symbols) {
         try {
             return Files.readString(Paths.get("C:\\Users\\Jonathan\\Documents\\HelloWorldFunction\\StockBackendFunction\\src\\main\\java\\stock\\backend\\apispark.json"));
         } catch (IOException e) {
