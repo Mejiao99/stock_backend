@@ -5,10 +5,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,17 +29,22 @@ public class MarketYahoo implements Market {
     @Override
     public Map<String, Money> calculateStockPrices(List<String> tickets, LocalDate date, String targetCurrency) {
         String symbols = formatTicketListToCallApi(tickets);
-        String json = callApi("1d", "1wk", symbols);
-        Map<String, TicketInformation> ticketsInformation = getYahooFinanceSparkApiResponse(json);
+        String sparkJson = callSparkApi("1d", "1wk", symbols);
+        String quoteJson = callQuoteApi( symbols);
+        Map<String, TicketInformation> ticketsInformation = getYahooFinanceSparkApiResponse(sparkJson);
+        YahooFinanceApiResponse yahooQuoteApiResponse = getYahooQuoteApiResponse(quoteJson);
+
         Map<String, Money> result = new HashMap<>();
         for (Map.Entry<String, TicketInformation> entry : ticketsInformation.entrySet()) {
-            result.put(ticketSumDate(entry.getKey(),date), ticketInformationToMoney(entry.getValue()));
+            String ticket = entry.getKey();
+            result.put(ticketSumDate(ticket, date), ticketInformationToMoney(entry.getValue(),ticket,  yahooQuoteApiResponse));
         }
         return result;
     }
 
-    public Money ticketInformationToMoney(TicketInformation ticketInformation) {
-        return Money.builder().amount(ticketInformation.getChartPreviousClose()).currency("CAD").build();
+    public Money ticketInformationToMoney(TicketInformation ticketInformation, String ticket, YahooFinanceApiResponse response) {
+        final String currency = getTicketFromApiResponse(ticket, response);
+        return Money.builder().amount(ticketInformation.getChartPreviousClose()).currency(currency).build();
     }
 
     public String formatTicketListToCallApi(List<String> tickets) {
@@ -52,25 +55,58 @@ public class MarketYahoo implements Market {
         return String.valueOf(result);
     }
 
-    private String callApi(String interval, String range, String symbols) {
+    private String callSparkApi(String interval, String range, String symbols) {
         try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://yfapi.net/v8/finance/spark?interval=" + interval + "&range=" + range + "&symbols=" + symbols))
-                    .header("x-api-key", System.getenv("YAHOO_API"))
-                    .method("GET", HttpRequest.BodyPublishers.noBody())
-                    .build();
-            HttpResponse<String> response = HttpClient.newHttpClient()
-                    .send(request, HttpResponse.BodyHandlers.ofString());
-            return response.body();
-        } catch (IOException | InterruptedException e) {
+//            HttpRequest request = HttpRequest.newBuilder()
+//                    .uri(URI.create("https://yfapi.net/v8/finance/spark?interval=" + interval + "&range=" + range + "&symbols=" + symbols))
+//                    .header("x-api-key", System.getenv("YAHOO_API"))
+//                    .method("GET", HttpRequest.BodyPublishers.noBody())
+//                    .build();
+//            HttpResponse<String> response = HttpClient.newHttpClient()
+//                    .send(request, HttpResponse.BodyHandlers.ofString());
+//            return response.body();
+            return Files.readString(Paths.get("C:\\Users\\Jonathan\\Documents\\HelloWorldFunction\\StockBackendFunction\\src\\main\\java\\stock\\backend\\apispark.json"));
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-
-    private Map<String, TicketInformation> getYahooFinanceSparkApiResponse(String json) {
+    private String callQuoteApi(String symbols) {
         try {
-            return objectMapper.readValue(json, new TypeReference<Map<String, TicketInformation>>() {
+//            HttpRequest request = HttpRequest.newBuilder()
+//                    .uri(URI.create("https://yfapi.net/v8/finance/spark?interval=" + interval + "&range=" + range + "&symbols=" + symbols))
+//                    .header("x-api-key", System.getenv("YAHOO_API"))
+//                    .method("GET", HttpRequest.BodyPublishers.noBody())
+//                    .build();
+//            HttpResponse<String> response = HttpClient.newHttpClient()
+//                    .send(request, HttpResponse.BodyHandlers.ofString());
+//            return response.body();
+            return Files.readString(Paths.get("C:\\Users\\Jonathan\\Documents\\HelloWorldFunction\\StockBackendFunction\\src\\main\\java\\stock\\backend\\apiquote.json"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String getTicketFromApiResponse(String ticket, YahooFinanceApiResponse response) {
+        for (TicketInformation ticketInformation : response.quoteResponse.result) {
+            if (ticketInformation.getSymbol().equals(ticket)) {
+                return ticketInformation.getCurrency();
+            }
+        }
+        return "";
+    }
+
+    private YahooFinanceApiResponse getYahooQuoteApiResponse(String quoteJson) {
+        try {
+            return objectMapper.readValue(quoteJson, YahooFinanceApiResponse.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Map<String, TicketInformation> getYahooFinanceSparkApiResponse(String sparkJson) {
+        try {
+            return objectMapper.readValue(sparkJson, new TypeReference<Map<String, TicketInformation>>() {
             });
         } catch (Exception e) {
             throw new RuntimeException(e);
