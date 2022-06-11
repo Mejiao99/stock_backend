@@ -36,7 +36,7 @@ public class YahooFinanceResponse {
         }
     }
 
-    private Map<LocalDate, Money> calculateStockHistoricalPrice(String ticket) {
+    private Map<LocalDate, Money> getStockHistoricalPrice(String ticket) {
         return null;
     }
 
