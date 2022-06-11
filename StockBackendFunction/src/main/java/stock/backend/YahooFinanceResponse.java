@@ -1,5 +1,6 @@
 package stock.backend;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -46,7 +47,18 @@ public class YahooFinanceResponse {
     private Map<LocalDate, Money> getStockHistoricalPrice(String ticket) {
         String sparkJson = callSparkApi(ticket);
         String quoteJson = callQuoteApi(ticket);
+        Map<String, TicketInformation> ticketsInformation = getYahooFinanceSparkApiResponse(sparkJson);
+        YahooFinanceApiResponse yahooQuoteApiResponse = getYahooQuoteApiResponse(quoteJson);
         return null;
+    }
+
+    private Map<String, TicketInformation> getYahooFinanceSparkApiResponse(String sparkJson) {
+        try {
+            return objectMapper.readValue(sparkJson, new TypeReference<Map<String, TicketInformation>>() {
+            });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private String getTicketFromApiResponse(String ticket, YahooFinanceApiResponse response) {
