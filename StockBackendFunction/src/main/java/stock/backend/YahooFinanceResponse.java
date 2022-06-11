@@ -50,7 +50,17 @@ public class YahooFinanceResponse {
         String quoteJson = callQuoteApi(ticket);
         Map<String, TicketInformation> ticketsInformation = getYahooFinanceSparkApiResponse(sparkJson);
         YahooFinanceApiResponse yahooQuoteApiResponse = getYahooQuoteApiResponse(quoteJson);
-        return null;
+
+        Map<LocalDate, Money> result = new HashMap<>();
+        for (Map.Entry<String, TicketInformation> entry : ticketsInformation.entrySet()) {
+            TicketInformation ticketInformation = entry.getValue();
+            for (Integer timeStamp:ticketInformation.getTimestamp()){
+                int LocationOfClose = ticketInformation.getTimestamp().indexOf(timeStamp);
+                Double amount = ticketInformation.getClose().get(LocationOfClose);
+                result.put(localDateFromTimestamp(timeStamp),ticketInformationToMoney(ticketInformation,ticket,amount,yahooQuoteApiResponse));
+            }
+        }
+        return result;
     }
 
     public Money ticketInformationToMoney(TicketInformation ticketInformation, String ticket,Double amount, YahooFinanceApiResponse response) {
