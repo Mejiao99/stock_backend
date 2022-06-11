@@ -25,12 +25,13 @@ public class YahooFinanceResponse {
 
     public static void main(String[] args) {
         YahooFinanceResponse response = new YahooFinanceResponse();
+        System.err.println(response.localDateFromTimestamp(1652673600));
         System.err.println(response.getStockHistoricalPrice("XUU.TO"));
     }
 
     private String callSparkApi(String symbols) {
         try {
-            return Files.readString(Paths.get("C:\\Users\\Jonathan\\Documents\\HelloWorldFunction\\StockBackendFunction\\src\\main\\java\\stock\\backend\\apispark.json"));
+            return Files.readString(Paths.get("C:\\Users\\Jonathan\\Documents\\HelloWorldFunction\\StockBackendFunction\\src\\main\\java\\stock\\backend\\singleSparkMax.json"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -38,7 +39,7 @@ public class YahooFinanceResponse {
 
     private String callQuoteApi(String symbols) {
         try {
-            return Files.readString(Paths.get("C:\\Users\\Jonathan\\Documents\\HelloWorldFunction\\StockBackendFunction\\src\\main\\java\\stock\\backend\\apiquote.json"));
+            return Files.readString(Paths.get("C:\\Users\\Jonathan\\Documents\\HelloWorldFunction\\StockBackendFunction\\src\\main\\java\\stock\\backend\\singleQuote.json"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
