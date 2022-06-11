@@ -1,5 +1,8 @@
 package stock.backend;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -9,12 +12,16 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class YahooFinanceResponse {
     MarketYahoo marketYahoo = new MarketYahoo();
+    private static final ObjectMapper objectMapper =
+            new ObjectMapper()
+                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     public static void main(String[] args) {
         YahooFinanceResponse response = new YahooFinanceResponse();
@@ -37,9 +44,27 @@ public class YahooFinanceResponse {
     }
 
     private Map<LocalDate, Money> getStockHistoricalPrice(String ticket) {
+        String sparkJson = callSparkApi(ticket);
+        String quoteJson = callQuoteApi(ticket);
         return null;
     }
 
+    private String getTicketFromApiResponse(String ticket, YahooFinanceApiResponse response) {
+        for (TicketInformation ticketInformation : response.quoteResponse.result) {
+            if (ticketInformation.getSymbol().equals(ticket)) {
+                return ticketInformation.getCurrency();
+            }
+        }
+        return "";
+    }
+
+    private YahooFinanceApiResponse getYahooQuoteApiResponse(String quoteJson) {
+        try {
+            return objectMapper.readValue(quoteJson, YahooFinanceApiResponse.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
     private long calculateInterval(LocalDate startDate, LocalDate endDate) {
         return endDate.getDayOfMonth() - startDate.getDayOfMonth();
     }
