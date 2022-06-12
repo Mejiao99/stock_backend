@@ -6,8 +6,6 @@ import lombok.Data;
 
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @Builder
 @NoArgsConstructor
@@ -15,7 +13,5 @@ import java.util.List;
 public class TicketInformation {
     private String symbol;
     private String currency;
-    private List<Integer> timestamp;
-    private List<Double> close;
-    private double chartPreviousClose;
+    private double regularMarketPreviousClose;
 }

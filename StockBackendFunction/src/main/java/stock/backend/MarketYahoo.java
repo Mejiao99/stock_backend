@@ -27,28 +27,29 @@ public class MarketYahoo implements Market {
         tickets.add("XAW.TO");
         tickets.add("XUU.TO");
         Map<String, Money> map = market.calculateStockPrices(tickets);
+        System.err.println(map);
     }
 
-    //TODO: delete localDate and targetCurrency
     @Override
     public Map<String, Money> calculateStockPrices(List<String> tickets) {
         String symbols = formatTicketListToCallApi(tickets);
-        String sparkJson = callSparkApi("1d", "1wk", symbols);
         String quoteJson = callQuoteApi(symbols);
-        Map<String, TicketInformation> ticketsInformation = getYahooFinanceSparkApiResponse(sparkJson);
+
         YahooFinanceApiResponse yahooQuoteApiResponse = getYahooQuoteApiResponse(quoteJson);
+        List<TicketInformation> ticketsInformation = yahooQuoteApiResponse.getQuoteResponse().getResult();
 
         Map<String, Money> result = new HashMap<>();
-        for (Map.Entry<String, TicketInformation> entry : ticketsInformation.entrySet()) {
-            String ticket = entry.getKey();
-            result.put(ticket, ticketInformationToMoney(entry.getValue(), ticket, yahooQuoteApiResponse));
+        for (TicketInformation ticketInformation : ticketsInformation) {
+            String ticket = ticketInformation.getSymbol();
+            result.put(ticket, ticketInformationToMoney(ticketInformation));
         }
         return result;
     }
 
-    public Money ticketInformationToMoney(TicketInformation ticketInformation, String ticket, YahooFinanceApiResponse response) {
-        final String currency = getTicketFromApiResponse(ticket, response);
-        return Money.builder().amount(ticketInformation.getChartPreviousClose()).currency(currency).build();
+    public Money ticketInformationToMoney(TicketInformation ticketInformation) {
+        final String currency = ticketInformation.getCurrency();
+        double amount = ticketInformation.getRegularMarketPreviousClose();
+        return Money.builder().amount(amount).currency(currency).build();
     }
 
     public String formatTicketListToCallApi(List<String> tickets) {
