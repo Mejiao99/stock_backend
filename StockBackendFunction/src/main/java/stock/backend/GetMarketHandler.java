@@ -32,7 +32,7 @@ public class GetMarketHandler extends AbstractRequestHandler<GetMarketResponse> 
         List<String> tickets = new ArrayList<>();
         tickets.add("XAW.TO");
         tickets.add("XUU.TO");
-        Map<String, Money> stockPrices = new MarketYahoo().calculateStockPrices(tickets, LocalDate.now(), "CAD");
+        Map<String, Money> stockPrices = new MarketYahoo().calculateStockPrices(tickets);
         List<Item> itemList = makeItemsFromStock(stockPrices);
         putItems(itemList);
         return GetMarketResponse.builder().data("hello world!").build();

@@ -5,9 +5,12 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,21 +26,22 @@ public class MarketYahoo implements Market {
         List<String> tickets = new ArrayList<>();
         tickets.add("XAW.TO");
         tickets.add("XUU.TO");
-        Map<String, Money> map = market.calculateStockPrices(tickets, null, null);
+        Map<String, Money> map = market.calculateStockPrices(tickets);
     }
 
+    //TODO: delete localDate and targetCurrency
     @Override
-    public Map<String, Money> calculateStockPrices(List<String> tickets, LocalDate date, String targetCurrency) {
+    public Map<String, Money> calculateStockPrices(List<String> tickets) {
         String symbols = formatTicketListToCallApi(tickets);
         String sparkJson = callSparkApi("1d", "1wk", symbols);
-        String quoteJson = callQuoteApi( symbols);
+        String quoteJson = callQuoteApi(symbols);
         Map<String, TicketInformation> ticketsInformation = getYahooFinanceSparkApiResponse(sparkJson);
         YahooFinanceApiResponse yahooQuoteApiResponse = getYahooQuoteApiResponse(quoteJson);
 
         Map<String, Money> result = new HashMap<>();
         for (Map.Entry<String, TicketInformation> entry : ticketsInformation.entrySet()) {
             String ticket = entry.getKey();
-            result.put(ticketSumDate(ticket, date), ticketInformationToMoney(entry.getValue(),ticket,  yahooQuoteApiResponse));
+            result.put(ticket, ticketInformationToMoney(entry.getValue(), ticket, yahooQuoteApiResponse));
         }
         return result;
     }
@@ -69,6 +73,22 @@ public class MarketYahoo implements Market {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String callQuoteApiExchange(String fromCurrency, String toCurrency) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://yfapi.net/v6/finance/quote?region=US&lang=en" + "&symbols=" + fromCurrency + toCurrency + "%3DX"))
+                    .header("x-api-key", System.getenv("YAHOO_API"))
+                    .method("GET", HttpRequest.BodyPublishers.noBody())
+                    .build();
+            HttpResponse<String> response = HttpClient.newHttpClient()
+                    .send(request, HttpResponse.BodyHandlers.ofString());
+            return response.body();
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     private String callQuoteApi(String symbols) {
@@ -113,7 +133,4 @@ public class MarketYahoo implements Market {
         }
     }
 
-    private String ticketSumDate(String ticket, LocalDate date) {
-        return ticket + "-" + date;
-    }
 }
