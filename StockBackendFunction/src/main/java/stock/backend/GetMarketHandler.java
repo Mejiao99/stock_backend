@@ -22,7 +22,6 @@ public class GetMarketHandler extends AbstractRequestHandler<GetMarketResponse> 
             .build();
     public static final DynamoDB DYNAMO_DB = new DynamoDB(CLIENT);
     private static final ObjectMapper objectMapper = new ObjectMapper();
-    private static final GetPortfoliosHandler getPortfoliosHandler = new GetPortfoliosHandler();
 
 
     @Override
