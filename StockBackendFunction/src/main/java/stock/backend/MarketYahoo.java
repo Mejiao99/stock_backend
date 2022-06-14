@@ -29,9 +29,6 @@ public class MarketYahoo implements Market {
         tickets.add("Currency:CAD");
         tickets.add("Currency:USD");
         tickets.add("XIC.TO");
-//      /  Map<String, Money> map = market.calculateStockPrices(tickets);
-        System.err.println(System.getenv("YAHOO_API"));
-//        System.err.println(map);
     }
 
     @Override
@@ -47,6 +44,12 @@ public class MarketYahoo implements Market {
         Map<String, Money> result = new HashMap<>();
         for (TicketInformation ticketInformation : ticketsInformation) {
             String ticket = ticketInformation.getSymbol();
+            if (ticket.equals("USDCAD=X")){
+                result.put("Currency:USD",ticketInformationToMoney(ticketInformation));
+            }
+            if (ticket.equals("CADUSD=X")){
+                result.put("Currency:CAD",ticketInformationToMoney(ticketInformation));
+            }
             result.put(ticket, ticketInformationToMoney(ticketInformation));
         }
         return result;
@@ -63,6 +66,9 @@ public class MarketYahoo implements Market {
         for (String ticket : tickets) {
             result.append(ticket).append("%2C");
         }
+        result.append("CADUSD=X").append("%2C");
+        result.append("USDCAD=X").append("%2C");
+        System.err.println(result);
         return String.valueOf(result);
     }
 
