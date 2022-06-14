@@ -24,16 +24,22 @@ public class MarketYahoo implements Market {
     public static void main(String[] args) {
         Market market = new MarketYahoo();
         List<String> tickets = new ArrayList<>();
-        tickets.add("XAW.TO");
-        tickets.add("XUU.TO");
-        Map<String, Money> map = market.calculateStockPrices(tickets);
-        System.err.println(map);
+        tickets.add("XEC.TO");
+        tickets.add("XEF.TO");
+        tickets.add("Currency:CAD");
+        tickets.add("Currency:USD");
+        tickets.add("XIC.TO");
+//      /  Map<String, Money> map = market.calculateStockPrices(tickets);
+        System.err.println(System.getenv("YAHOO_API"));
+//        System.err.println(map);
     }
 
     @Override
     public Map<String, Money> calculateStockPrices(List<String> tickets) {
         String symbols = formatTicketListToCallApi(tickets);
+
         String quoteJson = callQuoteApi(symbols);
+
 
         YahooFinanceApiResponse yahooQuoteApiResponse = getYahooQuoteApiResponse(quoteJson);
         List<TicketInformation> ticketsInformation = yahooQuoteApiResponse.getQuoteResponse().getResult();
@@ -94,16 +100,16 @@ public class MarketYahoo implements Market {
 
     private String callQuoteApi(String symbols) {
         try {
-//            HttpRequest request = HttpRequest.newBuilder()
-//                    .uri(URI.create("https://yfapi.net/v8/finance/spark?interval=" + interval + "&range=" + range + "&symbols=" + symbols))
-//                    .header("x-api-key", System.getenv("YAHOO_API"))
-//                    .method("GET", HttpRequest.BodyPublishers.noBody())
-//                    .build();
-//            HttpResponse<String> response = HttpClient.newHttpClient()
-//                    .send(request, HttpResponse.BodyHandlers.ofString());
-//            return response.body();
-            return Files.readString(Paths.get("C:\\Users\\Jonathan\\Documents\\HelloWorldFunction\\StockBackendFunction\\src\\main\\java\\stock\\backend\\apiquote.json"));
-        } catch (IOException e) {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://yfapi.net/v6/finance/quote?region=US&lang=en" + "&symbols=" + symbols))
+                    .header("x-api-key", System.getenv("YAHOO_API"))
+                    .method("GET", HttpRequest.BodyPublishers.noBody())
+                    .build();
+            HttpResponse<String> response = HttpClient.newHttpClient()
+                    .send(request, HttpResponse.BodyHandlers.ofString());
+            return response.body();
+//            return Files.readString(Paths.get("C:\\Users\\Jonathan\\Documents\\HelloWorldFunction\\StockBackendFunction\\src\\main\\java\\stock\\backend\\quoteya.json"));
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
