@@ -102,7 +102,7 @@ public class MarketYahoo implements Market {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("https://yfapi.net/v6/finance/quote?region=US&lang=en" + "&symbols=" + symbols))
-                    .header("x-api-key", System.getenv("YAHOO_API"))
+                    .header("x-api-key", System.getenv("YAHOOAPI"))
                     .method("GET", HttpRequest.BodyPublishers.noBody())
                     .build();
             HttpResponse<String> response = HttpClient.newHttpClient()

@@ -14,6 +14,12 @@ Globals:
       - arm64
     MemorySize: 512
 
+Parameters:
+  YahooApi:
+    Type: String
+    Description: YahooApiKey
+    Default: default value
+
 Resources:
   StockBackendFunction:
     Type: AWS::Serverless::Function
@@ -23,6 +29,9 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref PortfolioDefinitionsTable
+      Environment:
+        Variables:
+          YAHOOAPI: !Ref YahooApi
       Events:
         StockBackend:
           Type: Api
@@ -44,6 +53,9 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref PortfolioDefinitionsTable
+      Environment:
+        Variables:
+          YAHOOAPI: !Ref YahooApi
       Events:
         StockBackend:
           Type: Api
