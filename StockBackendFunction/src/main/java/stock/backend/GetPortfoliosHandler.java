@@ -1,8 +1,5 @@
 package stock.backend;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.KeyAttribute;
 import com.amazonaws.services.dynamodbv2.document.Table;
@@ -20,6 +17,7 @@ import java.util.Set;
 
 public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioResponse> {
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    private final MarketYahoo market = new MarketYahoo();
 
     @Override
     protected GetPortfolioResponse getResponse(APIGatewayProxyRequestEvent input, Context context) {
@@ -34,17 +32,20 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         Map<String, GetTableResponse> response = new HashMap<>();
         for (PortfolioDefinition portfolioDefinition : getPortfolioResponse.getPortfolios()) {
             List<String> accountTickets = getTickets(portfolioDefinition);
+            System.err.println("AccountTickets: " + accountTickets);
+            Map<String,Money> stockPrices = market.calculateStockPrices(accountTickets);
+            System.err.println("stockPrices: " + stockPrices);
             response.put(portfolioDefinition.getId(), GetTableResponse.builder()
                     .accounts(getAccounts(portfolioDefinition))
                     .tickets(accountTickets)
-                    .data(generatePortfolioData(portfolioDefinition, getPortfolioResponse.getStockPrices(), accountTickets))
-                    .totals(calculateTotals(portfolioDefinition, getPortfolioResponse, accountTickets)).build());
+                    .data(generatePortfolioData(portfolioDefinition,stockPrices , accountTickets))
+                    .totals(calculateTotals(portfolioDefinition, getPortfolioResponse, accountTickets,stockPrices)).build());
         }
         return response;
     }
 
     // This method returns the totals of the portfolio
-    private Totals calculateTotals(PortfolioDefinition portfolioDefinition, GetPortfolioResponse getPortfolioResponse, List<String> accountTickets) {
+    private Totals calculateTotals(PortfolioDefinition portfolioDefinition, GetPortfolioResponse getPortfolioResponse, List<String> accountTickets,Map<String,Money> stockPrices) {
         List<Money> accountTotals = accountTotals(
                 portfolioDefinition,
                 getPortfolioResponse.getStockPrices(),
@@ -152,7 +153,11 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
     // This method calculate the total amount given a ticket.
     private Money calculateTotalAmountTicket(String ticket, Map<String, Money> stockPrices, Map<String, Double> holdings) {
         Double accountHoldingAmount = holdings.get(ticket);
+        if (stockPrices.get(ticket) == null){
+            return Money.builder().amount(0.0).currency("").build();
+        }
         Money stockMoney = stockPrices.get(ticket);
+        System.err.println("stockMoney: "+stockMoney);
         if (accountHoldingAmount == null) {
             return Money.builder().amount(0.0).currency(stockMoney.getCurrency()).build();
         }

@@ -41,12 +41,9 @@ Resources:
     Properties:
       CodeUri: StockBackendFunction
       Handler: stock.backend.GetMarketHandler::handleRequest
-      Environment:
-        Variables:
-          YAHOO_API: !Ref MarketFunction
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: !Ref StockMarketTable
+            TableName: !Ref PortfolioDefinitionsTable
       Events:
         StockBackend:
           Type: Api
