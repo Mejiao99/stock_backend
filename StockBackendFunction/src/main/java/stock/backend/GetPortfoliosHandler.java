@@ -154,7 +154,7 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
     private Money calculateTotalAmountTicket(String ticket, Map<String, Money> stockPrices, Map<String, Double> holdings) {
         Double accountHoldingAmount = holdings.get(ticket);
         if (stockPrices.get(ticket) == null) {
-            System.err.println("TicketNull= "+ticket);
+            System.err.println("Warning: stockPrices.get(null)");
             return Money.builder().amount(0.0).currency("").build();
         }
         Money stockMoney = stockPrices.get(ticket);
