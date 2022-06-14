@@ -48,7 +48,7 @@ public class MarketYahoo implements Market {
                 result.put("Currency:USD",ticketInformationToMoney(ticketInformation));
             }
             if (ticket.equals("CADUSD=X")){
-                result.put("Currency:CAD",ticketInformationToMoney(ticketInformation));
+                result.put("Currency:CAD", Money.builder().amount(1.0).currency("CAD").build());
             }
             result.put(ticket, ticketInformationToMoney(ticketInformation));
         }
@@ -68,7 +68,6 @@ public class MarketYahoo implements Market {
         }
         result.append("CADUSD=X").append("%2C");
         result.append("USDCAD=X").append("%2C");
-        System.err.println(result);
         return String.valueOf(result);
     }
 

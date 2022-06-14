@@ -33,7 +33,7 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         for (PortfolioDefinition portfolioDefinition : getPortfolioResponse.getPortfolios()) {
             List<String> accountTickets = getTickets(portfolioDefinition);
             System.err.println("AccountTickets: " + accountTickets);
-            Map<String,Money> stockPrices = market.calculateStockPrices(accountTickets);
+            Map<String, Money> stockPrices = market.calculateStockPrices(accountTickets);
             System.err.println("stockPrices: " + stockPrices);
             response.put(portfolioDefinition.getId(), GetTableResponse.builder()
                     .accounts(getAccounts(portfolioDefinition))
@@ -48,13 +48,13 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
     private Totals calculateTotals(PortfolioDefinition portfolioDefinition, GetPortfolioResponse getPortfolioResponse, List<String> accountTickets,Map<String,Money> stockPrices) {
         List<Money> accountTotals = accountTotals(
                 portfolioDefinition,
-                getPortfolioResponse.getStockPrices(),
+                stockPrices,
                 getPortfolioResponse.getConversionRates(),
                 getPortfolioResponse.getTargetCurrency(),
                 accountTickets);
         return Totals.builder()
                 .accounts(accountTotals)
-                .tickets(ticketsTotals(portfolioDefinition.getAccounts(), getPortfolioResponse.getStockPrices()))
+                .tickets(ticketsTotals(portfolioDefinition.getAccounts(), stockPrices))
                 .total(calculateTotalHoldingPortfolio(accountTotals, getPortfolioResponse.getTargetCurrency()))
                 .build();
     }
@@ -153,7 +153,8 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
     // This method calculate the total amount given a ticket.
     private Money calculateTotalAmountTicket(String ticket, Map<String, Money> stockPrices, Map<String, Double> holdings) {
         Double accountHoldingAmount = holdings.get(ticket);
-        if (stockPrices.get(ticket) == null){
+        if (stockPrices.get(ticket) == null) {
+            System.err.println("TicketNull= "+ticket);
             return Money.builder().amount(0.0).currency("").build();
         }
         Money stockMoney = stockPrices.get(ticket);
