@@ -49,7 +49,6 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         List<Money> accountTotals = accountTotals(
                 portfolioDefinition,
                 stockPrices,
-                getPortfolioResponse.getConversionRates(),
                 getPortfolioResponse.getTargetCurrency(),
                 accountTickets);
         return Totals.builder()
@@ -110,23 +109,23 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
     }
 
     // This method returns a list with totals per existing account the portfolioDefinition
-    private List<Money> accountTotals(PortfolioDefinition portfolioDefinition, Map<String, Money> stockPrices, Map<String, Double> conversionRates, String targetCurrency, List<String> tickets) {
+    private List<Money> accountTotals(PortfolioDefinition portfolioDefinition, Map<String, Money> stockPrices, String targetCurrency, List<String> tickets) {
         List<Money> accountTotals = new ArrayList<>();
         for (Account account : portfolioDefinition.getAccounts()) {
             List<Money> accountHoldings = calculateAccountHoldings(account.getHoldings(), stockPrices, tickets);
-            accountTotals.add(calculateAccountTotal(accountHoldings, conversionRates, targetCurrency));
+            accountTotals.add(calculateAccountTotal(accountHoldings, stockPrices, targetCurrency));
         }
         return accountTotals;
     }
 
     // This method calculate the total amount given an accountHolding in the targetCurrency
-    private Money calculateAccountTotal(List<Money> accountHoldings, Map<String, Double> conversionRates, String currencyTarget) {
+    private Money calculateAccountTotal(List<Money> accountHoldings, Map<String, Money> stockPrices, String currencyTarget) {
         double total = 0.0;
         for (Money money : accountHoldings) {
             if (money.getCurrency().equals(currencyTarget)) {
                 total = total + money.getAmount();
             } else {
-                total = total + money.getAmount() * conversionRates.get(money.getCurrency());
+                total = total + money.getAmount() * stockPrices.get("Currency:USD").getAmount();
             }
         }
         return Money.builder().amount(total).currency(currencyTarget).build();

@@ -14,7 +14,6 @@ import java.util.Map;
 @AllArgsConstructor
 public class GetPortfolioResponse {
     private List<PortfolioDefinition> portfolios;
-    private Map<String, Double> conversionRates;
     private String targetCurrency;
     private Map<String,GetTableResponse> tablePerPortfolioDefinitions;
 }
