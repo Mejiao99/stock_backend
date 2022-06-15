@@ -29,12 +29,13 @@ public class MarketYahoo implements Market {
         tickets.add("Currency:CAD");
         tickets.add("Currency:USD");
         tickets.add("XIC.TO");
+        System.err.println(market.calculateStockPrices(tickets));
     }
 
     @Override
     public Map<String, Money> calculateStockPrices(List<String> tickets) {
         String symbols = formatTicketListToCallApi(tickets);
-
+        System.err.println(symbols);
         String quoteJson = callQuoteApi(symbols);
 
 

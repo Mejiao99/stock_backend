@@ -32,9 +32,9 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
         Map<String, GetTableResponse> response = new HashMap<>();
         for (PortfolioDefinition portfolioDefinition : getPortfolioResponse.getPortfolios()) {
             List<String> accountTickets = getTickets(portfolioDefinition);
-            System.err.println("AccountTickets: " + accountTickets);
+
             Map<String, Money> stockPrices = market.calculateStockPrices(accountTickets);
-            System.err.println("stockPrices: " + stockPrices);
+
             response.put(portfolioDefinition.getId(), GetTableResponse.builder()
                     .accounts(getAccounts(portfolioDefinition))
                     .tickets(accountTickets)
@@ -158,7 +158,6 @@ public class GetPortfoliosHandler extends AbstractRequestHandler<GetPortfolioRes
             return Money.builder().amount(0.0).currency("").build();
         }
         Money stockMoney = stockPrices.get(ticket);
-        System.err.println("stockMoney: "+stockMoney);
         if (accountHoldingAmount == null) {
             return Money.builder().amount(0.0).currency(stockMoney.getCurrency()).build();
         }
